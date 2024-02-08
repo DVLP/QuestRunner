@@ -88,7 +88,7 @@ function returnStage:update(dt)
 	end
 
 	self.time = self.time + dt
-	if Vector4.Distance(self.bugbear:GetWorldPosition(), self.viktorChairPos) < 1.5 then
+	if self.bugbear and Vector4.Distance(self.bugbear:GetWorldPosition(), self.viktorChairPos) < 1.5 then
 		self.reachedLocation = true
 	end
 

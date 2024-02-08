@@ -1,5 +1,4 @@
 local GameUI = require("lib/GameUI")
-local GameSettings = require("lib/GameSettings")
 local Lang = require("module/Lang")
 -- local Panopticon = require("module/Panopticon")
 local Manager = require("module/Manager")
@@ -13,6 +12,7 @@ local Scene = require("module/Scene")
 local Phone = require("module/Phone")
 local Spawner = require("module/Spawner")
 local Utils = require("module/Utils")
+Lang:autoLocaleSet()
 
 local Runner = {
 	version = "0.0.1",
@@ -89,8 +89,6 @@ registerForEvent("onInit", function()
 	end)
 
 	-- Panopticon:initialize()
-	Runner.locale = tostring(NameToString(GameSettings.Get("/language/OnScreen")))
-	Lang:init(Runner.locale)
 
 	ui.init()
 	Scene:init()

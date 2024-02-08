@@ -1,15 +1,25 @@
-local log, errorLog, trace, Logger = table.unpack(require("module/Log"))
-local LangENUS = require("locale/en-us")
-
-local Lang = {}
+local log, errorLog, trace = table.unpack(require("module/Log"))
+local Lang = {
+	locale = "en-us",
+	locales = {},
+}
 local defaultLocale = "en-us"
 function Lang:new() return self end
 
-function Lang:init(locale)
-	self.locales = {}
-	self:addTranslation(LangENUS)
-	self:setLocale(locale)
-	self.isInitialized = true
+function Lang:autoLocaleSet()
+	Lang:loadTranslation('en-us') -- for defaults
+	local locale = tostring(Game.GetSettingsSystem():GetVar('/language', 'OnScreen'))
+	Lang:loadTranslation(locale)
+	Lang:setLocale(locale)
+end
+
+function Lang:loadTranslation(locale)
+	local localeFile = require("locale/" .. locale)
+	if not localeFile then
+		log("Locale file not found. Keeping default.")
+		return
+	end
+	self:addTranslation(localeFile)
 end
 
 function Lang:addTranslation(translation)
@@ -22,9 +32,17 @@ function Lang:addTranslation(translation)
 		else
 			self.locales[locale] = translations
 		end
+
+		if locale ~= defaultLocale then
+			local d = self.locales[defaultLocale]
+			for key, value in pairs(d) do
+				if self.locales[locale][key] == nil then
+					errorLog("Key", key, "missing in locale", locale)
+				end
+			end
+		end
 	end
-	-- reload reverse cache
-	self:setLocale(self.locale)
+	self.default = self.locales[defaultLocale]
 end
 
 function Lang:setLocale(locale)
@@ -34,12 +52,16 @@ function Lang:setLocale(locale)
 		log("Lang: Locale", locale, "not available. Using default", defaultLocale)
 	end
 	self.current = self.locales[locale] or self.default
+
+	self:buildReverseLookupIndex()
+end
+
+function Lang:buildReverseLookupIndex()
 	self.reverse = {}
 	for k, v in pairs(self.default) do
 		if self.current[k] then v = self.current[k] end
 		self.reverse[v] = k
 	end
-	
 end
 
 function Lang:get(key)
