@@ -11,7 +11,7 @@ local Locale = {
 		fx_bb_distress_call_3 = "\"โทรหา 1dentity เพื่อเช็คพิกัดล่าสุดที่ทราบ\"",
 		-- bb messages
 		bb_call_me_for_coordinates = "ขอบคุณพระเจ้า คุณอยู่ในระยะแล้ว! พวกมันจับฉันและพาฉันมาที่ไหนสักแห่ง โทรหาฉันแล้วฉันจะส่งพิกัดของฉันไปให้คุณ 8ug8ear",
-		bb_im_at_bottom_of_dam = "ขอบคุณพระเจ้า คุณอยู่ในระยะแล้ว! พวกมันอุ้มฉันมาจับไว้บนแท่นบริการของเขื่อน โทรหาฉันแล้วฉันจะส่งพิกัดของฉันไปให้คุณ 8ug8ear",
+		bb_im_at_bottom_of_dam = "ขอบคุณพระเจ้า คุณอยู่ในระยะแล้ว! พวกมันอุ้มฉันมาจับไว้บนแท่นบริการของเขื่อน 8ug8ear",
 		-- translators: make sure the text fully fits in the preview so the player can keep walking and reading
 		bb_storyline_1 = "วี อย่างที่คุณเห็นฉันถูกปิดกั้น...",
 		bb_storyline_2 = "พวกมันตั้งโปรแกรมไซเบอร์แวร์ของฉันใหม่",

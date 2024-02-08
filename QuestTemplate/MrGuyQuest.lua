@@ -41,6 +41,8 @@ function MrGuyQuest:start()
 end
 
 function MrGuyQuest:isDoable()
+	-- only if not on a QR mission
+	if self.runner.Manager.current ~= nil then return false end
 	-- conditions to allow doing the quest i.e. checking a fact and returning false if not met
 	-- i.e. not available until the first game quest is finished 
 	if Game.GetQuestsSystem():GetFactStr("q001_done") == 0 then return false end
@@ -93,8 +95,12 @@ function MrGuyQuest:setupTrigger()
 
 	self.runner.Phone.setContactProperty(contactNameKey, "isCallable", true)
 	self.runner.Phone.RegisterCallCallback(contactNameKey, function()
-		self:phonecallResponseOptions()
-		return true
+		if self:isDoable() then
+			self:phonecallResponseOptions()
+			return true
+		else
+			return false
+		end
 	end)
 end
 

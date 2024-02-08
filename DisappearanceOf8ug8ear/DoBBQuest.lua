@@ -92,6 +92,8 @@ function DoBBQuest:SpawnBugBearWhenReady()
 end
 
 function DoBBQuest:isDoable()
+	-- only if not on a QR mission
+	if self.runner.Manager.current ~= nil then return false end
 	-- not available until first mission was completed
 	if Game.GetQuestsSystem():GetFactStr("q001_done") == 0 then return false end
 	-- not available before Getting Warmer mission or if 8ug8ear was killed in it
@@ -155,8 +157,12 @@ function DoBBQuest:sendDistressMessages()
 		self.runner.Phone.sendMessage(fixerId, Lang:get("fx_bb_distress_call_2"))
 		self.runner.Phone.sendMessage(fixerId, Lang:get("fx_bb_distress_call_3"))
 		self.runner.Phone.RegisterCallCallback(fixerId, function()
-			self:phonecallResponseOptions()
-			return true
+			if self:isDoable() then
+				self:phonecallResponseOptions()
+				return true
+			else
+				return false
+			end
 		end)
 	end)
 end
@@ -177,15 +183,18 @@ function DoBBQuest:addBBNumberIfClose(questStarted)
 	self.runner.Cron.After(3, function()
 		if not questStarted then
 			self.runner.Phone.sendMessage(nameKey, Lang:get("bb_call_me_for_coordinates"))
+			self.runner.Phone.setContactProperty(nameKey, "isCallable", true)
+			self.runner.Phone.RegisterCallCallback(nameKey, function()
+				if self:isDoable() then
+					self:phonecallResponseOptions()
+					return true
+				else
+					return false
+				end
+			end)
 		else
 			self.runner.Phone.sendMessage(nameKey, Lang:get("bb_im_at_bottom_of_dam"))
 		end
-	end)
-
-	self.runner.Phone.setContactProperty(nameKey, "isCallable", true)
-	self.runner.Phone.RegisterCallCallback(nameKey, function()
-		self:phonecallResponseOptions()
-		return true
 	end)
 end
 

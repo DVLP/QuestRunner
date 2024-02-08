@@ -11,7 +11,7 @@ local Locale = {
 		fx_bb_distress_call_3 = "\"Call 1dentity to get my last known coordinates\"",
 		-- bb messages
 		bb_call_me_for_coordinates = "Thanks God you're in range! They got me and are taking me somewhere. Call me and I'll send you my coordinates, 8ug8ear",
-		bb_im_at_bottom_of_dam = "Thanks God you're in range! They got me and are holding me at the service platform of the dam. Call me and I'll send you my coordinates, 8ug8ear",
+		bb_im_at_bottom_of_dam = "Thanks God you're in range! They got me and are holding me at the service platform of the dam. Please hurry, 8ug8ear",
 		-- translators: make sure the text fully fits in the preview so the player can keep walking and reading
 		bb_storyline_1 = "V, as you can see I'm bricked...",
 		bb_storyline_2 = "They reprogrammed my cyberware",
