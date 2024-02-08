@@ -4,7 +4,7 @@ local DoBBQuest = require("DoBBQuest")
 local log, errorLog, trace, Logger = table.unpack(require("lib/Log"))
 
 local DoBB = {
-	version = "0.0.7",
+	version = "0.0.8",
 	debug = false,
 }
 

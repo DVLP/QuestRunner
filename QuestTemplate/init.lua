@@ -3,7 +3,7 @@ local MrGuyQuest = require("MrGuyQuest")
 local log, errorLog, trace, Logger = table.unpack(require("lib/Log"))
 
 local QuestTemplate = {
-	version = "0.0.2",
+	version = "0.0.3",
 	debug = true,
 }
 
