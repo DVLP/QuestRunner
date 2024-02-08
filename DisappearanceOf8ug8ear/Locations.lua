@@ -10,7 +10,7 @@ local Locations = {
 		},
 		-- enemy spawning areas - w is the radius in meters of spawn
 		spawnpoints = {
-			{ pos = { x = 943.12244, y = -2938.4763, z = 205.07115, w = 1 }, flat = true, }, -- top of the ladder - entrance between concrete barriers
+			{ pos = { x = 943.12244, y = -2938.4763, z = 204.77115, w = 1 }, flat = true, }, -- top of the ladder - entrance between concrete barriers
 
 			-- above the walk
 			{ pos = { x = 1057.2399, y = -2889.4766, z = 211.85278, w = 0.5 }, flat = true, spawnDistance = 200 }, -- top of elevator

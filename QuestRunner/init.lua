@@ -36,6 +36,7 @@ function Runner.resetState()
 		inCET = false,
 		timeDilation = false,
 	}
+	Runner.Manager.current = nil
 end
 
 Runner.Cron = Cron
