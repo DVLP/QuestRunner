@@ -3,14 +3,14 @@ local QuestStage  = require("lib/abstract/QuestStage")
 local Nav = require("lib/Nav")
 local Lang = require("lib/Lang")
 
-local name = Lang:get("return_bb")
-local description = Lang:get("put_her_in_car_take_to_viktor")
+local nameKey = "return_bb"
+local descriptionKey = "put_her_in_car_take_to_viktor"
 local TIME_LIMIT = 15 * 60 -- 15 mins
 
 local returnStage = QuestStage:new()
 
 function returnStage:new(runner)
-	return QuestStage.new(returnStage, runner, name, description)
+	return QuestStage.new(returnStage, runner, Lang:get(nameKey), Lang:get(descriptionKey))
 end
 
 function returnStage:start()

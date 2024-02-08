@@ -11,15 +11,16 @@ local DebriefStage = require("debriefStage")
 local Locations = require("Locations")
 local log, error, trace = table.unpack(require("lib/Log"))
 
-local name = Lang:get("disappearance_of_bb")
-local description = Lang:get("netrunners_kidnapped_bb")
+local nameKey = "disappearance_of_bb"
+local descriptionKey = "netrunners_kidnapped_bb"
 local level = 55
 
 local DoBBQuest = Quest:new()
-DoBBQuest.name = name -- also adding name statically to allow listing
+-- static function to get the name before instantiation
+function DoBBQuest.getLocalizedNameSTATIC() Lang:get(nameKey) end
 
 function DoBBQuest:new(runner)
-	return Quest.new(DoBBQuest, runner, name, description, level)
+	return Quest.new(DoBBQuest, runner, Lang:get(nameKey), Lang:get(descriptionKey), level)
 end
 
 function DoBBQuest:start()
@@ -118,7 +119,7 @@ function DoBBQuest:phonecallResponseOptions()
 		{ text = Lang:get("im_on_my_way"), icon = self.runner.selector.CLOCK_ICON }
 	}
 	self.runner.selector.create("8ug8earNew", options, function(id)
-		self.runner.Manager:setCurrent(DoBBQuest:new(self.runner, name, description, level))
+		self.runner.Manager:setCurrent(DoBBQuest:new(self.runner, self.name, self.description, level))
 		self.runner.selector.hideHub()
 	end)
 	self.runner.Cron.After(5, function() self.runner.selector.hideHub() end)

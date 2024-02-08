@@ -3,14 +3,14 @@ local QuestStage  = require("lib/abstract/QuestStage")
 local Lang = require("lib/Lang")
 local Nav = require("lib/Nav")
 
-local name = Lang:get("leave")
-local description = Lang:get("viktor_must_start_the_procedure")
+local nameKey = "leave"
+local descriptionKey = "viktor_must_start_the_procedure"
 local TIME_LIMIT = 5 * 60 -- 5 mins
 
 local debriefStage = QuestStage:new()
 
 function debriefStage:new(runner)
-	return QuestStage.new(debriefStage, runner, name, description)
+	return QuestStage.new(debriefStage, runner, Lang:get(nameKey), Lang:get(descriptionKey))
 end
 
 function debriefStage:start()

@@ -12,13 +12,11 @@ local Scene = require("module/Scene")
 local Phone = require("module/Phone")
 local Spawner = require("module/Spawner")
 local Utils = require("module/Utils")
-Lang:autoLocaleSet()
 
 local Runner = {
-	version = "0.0.1",
+	version = "0.0.7",
 	debugLevel = "error",
 	allQuestsContact = false,
-	locale = "en-us",
 	isReady = false,
 	rootFixerId = "1dentity",
 	gameState = {
@@ -58,11 +56,9 @@ function Runner.onReady(callback)
 	if Runner.isReady then return callback() end
 	table.insert(onReadyCallbacks, callback)
 end
+
 registerForEvent("onInit", function()
-	if not GetPlayer() then
-		log("QuestRunner:onInit: Not in game")
-		return
-	end
+	Lang:autoLocaleSet()
 	GameUI.Listen(function(state)
 		local event = state.event
 		local inMenu = Runner.Utils.isInMenu(event)
@@ -78,7 +74,6 @@ registerForEvent("onInit", function()
 
 	ObserveAfter('TimeDilationEventsTransitions', 'OnEnter', function(this) Runner.gameState.timeDilation = true end)
 	ObserveAfter('TimeDilationEventsTransitions', 'OnExit', function(this) Runner.gameState.timeDilation = false end)
-
 	Observe("vehicleUIGameController", "OnVehicleCollision", function(this)
 		if Runner.onVehicleCrash then
 			local vehicle = GetMountedVehicle(Game.GetPlayer())
@@ -91,12 +86,11 @@ registerForEvent("onInit", function()
 	-- Panopticon:initialize()
 
 	ui.init()
-	Scene:init()
 	jumboText.init()
 	Phone.init()
 	Spawner.init()
 
-	-- readd phone contact after mod reload
+	-- fixes inGame state after mods reload
 	Runner.gameState.inGame = not GameUI.IsDetached()
 	Runner.isReady = true
 

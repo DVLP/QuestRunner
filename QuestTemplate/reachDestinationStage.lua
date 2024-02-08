@@ -4,13 +4,13 @@ local Nav = require("lib/Nav")
 local Lang = require("lib/Lang")
 
 local TIME_LIMIT = 60
-local name = Lang:get("reach_destination")
-local description = Lang:get("dont_be_late")
+local nameKey = "reach_destination"
+local descriptionKey = "dont_be_late"
 
 local reachDestinationStage = QuestStage:new()
 
 function reachDestinationStage:new(runner)
-	return QuestStage.new(reachDestinationStage, runner, name, description)
+	return QuestStage.new(reachDestinationStage, runner, Lang:get(nameKey), Lang:get(descriptionKey))
 end
 
 function reachDestinationStage:start()
@@ -19,8 +19,8 @@ function reachDestinationStage:start()
 	self.timeLimit = self.time + TIME_LIMIT
 	self.reachedDestination = false
 
-	local startPos = self.runner.Scene.locations["badlandRoad"].waypoints[1].pos
-	self.runner.Scene:setup(self.runner.Scene.locations["badlandRoad"])
+	local startPos = self.runner.Scene.locations["northOakPond"].waypoints[1].pos
+	self.runner.Scene:setup(self.runner.Scene.locations["northOakPond"])
 
 	self.runner.HUD.QuestMessage(self.name .. ': ' .. self.description)
 	GameInstance.GetAudioSystem():Play(CName"ui_jingle_quest_new")

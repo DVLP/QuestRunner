@@ -7,7 +7,7 @@ local defaultLocale = "en-us"
 function Lang:new() return self end
 
 function Lang:autoLocaleSet()
-	Lang:loadTranslation('en-us') -- for defaults
+	Lang:loadTranslation(defaultLocale) -- for defaults
 	local locale = tostring(Game.GetSettingsSystem():GetVar('/language', 'OnScreen'))
 	Lang:loadTranslation(locale)
 	Lang:setLocale(locale)
@@ -65,6 +65,10 @@ function Lang:buildReverseLookupIndex()
 end
 
 function Lang:get(key)
+	if not self.current then
+		errorLog("Lang: Locale not set. Notice: Lang:get cannot be used before onInit CET event")
+		return
+	end
 	local value = self.current[key] or self.default[key]
 	if not value then errorLog("Error, key not found", key) end
 	return value

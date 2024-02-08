@@ -1,18 +1,17 @@
 -- (c)1dentity - do not copy - there's QuestTemplate available for copying
 local Lang = require("lib/Lang")
-Lang:autoLocaleSet()
 local DoBBQuest = require("DoBBQuest")
 local log, errorLog, trace, Logger = table.unpack(require("lib/Log"))
 
 local DoBB = {
-	version = "0.0.5",
+	version = "0.0.7",
 	debug = false,
-	locale = Lang.locale
 }
 
 registerForEvent("onInit", function()
+	Lang:autoLocaleSet()
 	local QuestRunner = GetMod("QuestRunner")
-	Logger.setLevel("error")
+	-- Logger.setLevel("trace")
 	-- QuestRunner.overrideLogLevel("trace") -- setting logging level of QuestRunner - use for development only
 
 	QuestRunner.onReady(function ()

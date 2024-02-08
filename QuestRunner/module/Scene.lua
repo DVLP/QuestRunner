@@ -29,9 +29,6 @@ function Scene:new()
 	return setmetatable(o, self)
 end
 
-function Scene:init()
-end
-
 function Scene:setup(locationConfig)
 	self.doneSpawnpoints = {}
 	self.donePayloads = {}

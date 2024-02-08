@@ -3,14 +3,14 @@ local QuestStage = require("lib/abstract/QuestStage")
 local Nav = require("lib/Nav")
 local Lang = require("lib/Lang")
 
-local TIME_LIMIT = 120
-local name = Lang:get("find_bb")
-local description = Lang:get("she_cant_hold_on")
+local TIME_LIMIT = 5 * 60
+local nameKey = "find_bb"
+local descriptionKey = "she_cant_hold_on"
 
 local reachStartStage = QuestStage:new()
 
 function reachStartStage:new(runner)
-	return QuestStage.new(reachStartStage, runner, name, description)
+	return QuestStage.new(reachStartStage, runner, Lang:get(nameKey), Lang:get(descriptionKey))
 end
 
 function reachStartStage:start()
@@ -36,6 +36,11 @@ function reachStartStage:update(dt)
 		self.reachedLocation = true
 	end
 	self.runner.Scene:update(true)
+
+	local secLeft = math.floor(self.timeLimit - self.time)
+	if secLeft < 60 and secLeft ~= 0 then
+		if secLeft % 10 == 0 then self.runner.HUD.QuestMessage(string.format(Lang:get("hurry_up_x_left"), secLeft .. "s")) end
+	end
 end
 
 function reachStartStage:isDone()

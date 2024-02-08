@@ -20,7 +20,7 @@ end
 function Manager:addQuest(quest)
 	quest.runner = self.runner
 	table.insert(self.quests, quest)
-	log("Added quest", quest.name)
+	log("Added quest", quest.getLocalizedNameSTATIC())
 
 	self.refreshAvailable = 10 -- force update
 	self:updateQuestTriggers()
@@ -32,7 +32,7 @@ function Manager:getQuestOptions()
 	if #availableQuests == 0 then return end
 
 	for i, quest in ipairs(availableQuests) do
-		table.insert(options, { text = quest.name, icon = quest.icon or selector.OPEN_VENDOR_ICON })
+		table.insert(options, { text = quest.getLocalizedNameSTATIC(), icon = quest.icon or selector.OPEN_VENDOR_ICON })
 	end
 	table.insert(options, { text = Lang:get("cancel"), icon = selector.NONE_ICON })
 
@@ -48,7 +48,7 @@ function Manager:getQuestOptions()
 end
 
 function Manager:setCurrent(quest)
-	if not quest:isDoable() then trace("Quest is not doable", quest.name) end
+	if not quest:isDoable() then trace("Quest is not doable", quest.getLocalizedNameSTATIC()) end
 	self.current = quest
 	quest.currentId = 0
 	quest:start()

@@ -50,14 +50,20 @@ function Spawner.GetGroundHeightAt(pos, rayDepth, rayStartOffset)
 	return Vector4.Distance(posW1, tHitPos) < Vector4.Distance(posW1, sHitPos) and tHitPos or sHitPos
 end
 
+-- if the spawn point and everything in its radius are at the same height there's no need to find the ground
+function Spawner.GetFlatSpawnPositionInRadius(pos, spawnRadius)
+	local spreadX = math.random(-spawnRadius, spawnRadius) + math.random() - 1
+	local spreadY = math.random(-spawnRadius, spawnRadius) + math.random() - 1
+	return Vector4.new(pos.x - spreadX, pos.y - spreadY, pos.z, pos.w)
+end
+
+-- like above but also tries multiple times in the given radius until a ray finds the ground i.e. for sloping terrain
 function Spawner.GetGroundedSpawnPositionInRadius(pos, spawnRadius, isWarmup)
 	local newPos
 	-- Issues with casting a ray beause the objects are not stream in yet
 	-- TODO: Find a way to stream in the world at coords without looking
 	for i = 1, 10, 1 do
-		local spreadX = math.random(-spawnRadius, spawnRadius) + math.random() - 1
-		local spreadY = math.random(-spawnRadius, spawnRadius) + math.random() - 1
-		local spawnPosition = Vector4.new(pos.x - spreadX, pos.y - spreadY, pos.z, pos.w)
+		local spawnPosition = Spawner.GetFlatSpawnPositionInRadius(pos, spawnRadius)
 
 		-- the terrain in the radius may be sloping so we're also checking with a higher starting point and larger depth
 		newPos = Spawner.GetGroundHeightAt(spawnPosition, 1, 0.3)
@@ -99,11 +105,16 @@ function Spawner.CanSpawn(playerPos, objPos, spawnDist)
 	return false
 end
 
+
 function Spawner.SpawnNPC(npcTweakDBID, pos, spawnRadius, getGround, onSpawn)
 	local player = Game.GetPlayer()
 	local heading = player:GetWorldForward()
 	local spawnPositionGrounded = pos
-	if getGround then spawnPositionGrounded = Spawner.GetGroundedSpawnPositionInRadius(pos, spawnRadius) end
+	if getGround then
+		spawnPositionGrounded = Spawner.GetGroundedSpawnPositionInRadius(pos, spawnRadius)
+	else
+		spawnPositionGrounded = Spawner.GetFlatSpawnPositionInRadius(pos, spawnRadius)
+	end
 
 	local spawnTransform = player:GetWorldTransform()
 	spawnTransform:SetPosition(spawnPositionGrounded)

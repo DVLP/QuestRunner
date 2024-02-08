@@ -3,14 +3,14 @@ local QuestStage  = require("lib/abstract/QuestStage")
 local Nav = require("lib/Nav")
 local Lang = require("lib/Lang")
 
-local name		  = Lang:get("shes_down_there")
-local description = Lang:get("find_her_and_bring_her_back")
+local nameKey = "shes_down_there"
+local descriptionKey = "find_her_and_bring_her_back"
 local TIME_LIMIT = 600
 
 local searchingStage = QuestStage:new()
 
 function searchingStage:new(runner)
-	return QuestStage.new(searchingStage, runner, name, description)
+	return QuestStage.new(searchingStage, runner, Lang:get(nameKey), Lang:get(descriptionKey))
 end
 
 function searchingStage:start()

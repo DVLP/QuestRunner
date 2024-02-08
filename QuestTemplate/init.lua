@@ -1,19 +1,18 @@
 local Lang = require("lib/Lang")
-Lang:autoLocaleSet()
 local MrGuyQuest = require("MrGuyQuest")
 local log, errorLog, trace, Logger = table.unpack(require("lib/Log"))
 
 local QuestTemplate = {
-	version = "0.0.1",
+	version = "0.0.2",
 	debug = true,
-	locale = Lang.locale,
 }
 
 registerForEvent("onInit", function()
-	Lang:setLocale(QuestTemplate.locale)
+	Lang:autoLocaleSet()
 	local QuestRunner = GetMod("QuestRunner")
-	Logger.setLevel("trace")
-	QuestRunner.overrideLogLevel("trace") -- setting logging level of QuestRunner - use for development only
+	-- Logging level should only be increased during development. In production should be default (error)
+	-- Logger.setLevel("trace") -- more verbose logging, there's also debug
+	-- QuestRunner.overrideLogLevel("trace") -- setting logging level of QuestRunner
 
 	QuestRunner.onReady(function ()
 		-- For available icons see QuestRunner/lib/ui_icons.jpg

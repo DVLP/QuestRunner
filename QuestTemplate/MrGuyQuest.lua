@@ -7,15 +7,16 @@ local Locations = require("Locations")
 -- quest stages
 local ReachDestinationStage = require("reachDestinationStage")
 
-local name = Lang:get("mrguy_quest")
-local description = Lang:get("mrguy_quest_description")
+local nameKey = "mrguy_quest"
+local descriptionKey = "mrguy_quest_description"
 local level = 55
 
 local MrGuyQuest = Quest:new()
-MrGuyQuest.name = name
+-- static function to get the name before instantiation
+function MrGuyQuest.getLocalizedNameSTATIC() Lang:get(nameKey) end
 
 function MrGuyQuest:new(runner)
-	return Quest.new(MrGuyQuest, runner, name, description, level)
+	return Quest.new(MrGuyQuest, runner, Lang:get(nameKey), Lang:get(descriptionKey), level)
 end
 
 function MrGuyQuest:start()
@@ -67,7 +68,7 @@ function MrGuyQuest:phonecallResponseOptions()
 	self.runner.selector.create("mrGuy", options, function(id)
 		if id == 0 then
 			-- if chosen 1, start the quest
-			self.runner.Manager:setCurrent(MrGuyQuest:new(self.runner, name, description, level))
+			self.runner.Manager:setCurrent(MrGuyQuest:new(self.runner, self.name, self.description, level))
 		end
 		self.runner.selector.hideHub()
 	end)
@@ -78,20 +79,20 @@ function MrGuyQuest:setupTrigger()
 	if self.triggerSet or not self:isDoable() then return end
 	self.triggerSet = true
 
-	local nameKey = "mrGuy"
+	local contactNameKey = "mrGuy"
 	local localizedName = Lang:get("mission_contact")
-	local isNew = self.runner.Phone.addContact(nameKey, localizedName, Lang:get("mission_contact_second_line"))
-	self.runner.Phone.setContactProperty(nameKey, "questRelated", true)
+	local isNew = self.runner.Phone.addContact(contactNameKey, localizedName, Lang:get("mission_contact_second_line"))
+	self.runner.Phone.setContactProperty(contactNameKey, "questRelated", true)
 
 	if isNew then
 		self.runner.Cron.After(12, function() self.runner.Phone.showNewContactNotification("", localizedName, 7) end)
 	end
 	self.runner.Cron.After(5, function()
-		self.runner.Phone.sendMessage(nameKey, Lang:get("mrguy_quest_request_message"))
+		self.runner.Phone.sendMessage(contactNameKey, Lang:get("mrguy_quest_request_message"))
 	end)
 
-	self.runner.Phone.setContactProperty(nameKey, "isCallable", true)
-	self.runner.Phone.RegisterCallCallback(nameKey, function()
+	self.runner.Phone.setContactProperty(contactNameKey, "isCallable", true)
+	self.runner.Phone.RegisterCallCallback(contactNameKey, function()
 		self:phonecallResponseOptions()
 		return true
 	end)
