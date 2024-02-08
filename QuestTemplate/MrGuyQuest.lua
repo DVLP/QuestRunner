@@ -13,7 +13,7 @@ local level = 55
 
 local MrGuyQuest = Quest:new()
 -- static function to get the name before instantiation
-function MrGuyQuest.getLocalizedNameSTATIC() Lang:get(nameKey) end
+function MrGuyQuest.getLocalizedNameSTATIC() return Lang:get(nameKey) end
 
 function MrGuyQuest:new(runner)
 	return Quest.new(MrGuyQuest, runner, Lang:get(nameKey), Lang:get(descriptionKey), level)

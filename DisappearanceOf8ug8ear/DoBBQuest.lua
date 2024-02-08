@@ -17,7 +17,7 @@ local level = 55
 
 local DoBBQuest = Quest:new()
 -- static function to get the name before instantiation
-function DoBBQuest.getLocalizedNameSTATIC() Lang:get(nameKey) end
+function DoBBQuest.getLocalizedNameSTATIC() return Lang:get(nameKey) end
 
 function DoBBQuest:new(runner)
 	return Quest.new(DoBBQuest, runner, Lang:get(nameKey), Lang:get(descriptionKey), level)
@@ -94,6 +94,8 @@ end
 function DoBBQuest:isDoable()
 	-- not available until first mission was completed
 	if Game.GetQuestsSystem():GetFactStr("q001_done") == 0 then return false end
+	-- not available before Getting Warmer mission or if 8ug8ear was killed in it
+	if Game.GetQuestsSystem():GetFactStr("rey_09_finished") == 0 or Game.GetQuestsSystem():GetFactStr("rey_09_target_died") == 1 then return false end
 	return true
 end
 
