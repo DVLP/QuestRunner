@@ -31,7 +31,7 @@ local Locations = {
 			{ pos = { x = 1124.2974, y = -2876.0208, z = 189.65704, w = 1 }, flat = true,}, -- third platform
 			{ pos = { x = 1154.3064, y = -2873.5527, z = 189.65703, w = 1 }, flat = true,}, -- 4th platform
 			{ pos = { x = 1213.9773, y = -2868.1458, z = 189.6579, w = 1 }, flat = true,}, -- 5th platform
-			{ pos = { x = 1046.8519, y = -2887.773, z = 185.65279, w = 6 }, flat = true,}, -- first elevator area
+			{ pos = { x = 1046.8519, y = -2887.773, z = 185.65279, w = 5.5 }, flat = true,}, -- first elevator area
 			{ pos = { x = 1064.3547, y = -2881.3992, z = 189.65628, w = 1 }}, { pos = { x = 1094.475, y = -2878.7869, z = 189.65651, w = 1 }}, { pos = { x = 1133.346, y = -2864.069, z = 187.6644, w = 0.5 }}, { pos = { x = 1184.0437, y = -2871.1367, z = 189.657, w = 1 }}, { pos = { x = 1220.5411, y = -2856.9023, z = 187.6644, w = 0.5 }}
 		},
 		-- important places i.e. with things to take or someone to rescue
