@@ -65,7 +65,7 @@ registerForEvent("onInit", function()
 		local inMenu = Runner.Utils.isInMenu(event)
 		if inMenu ~= nil then Runner.gameState.inMenu = inMenu end
 
-		if state.menu == "DeathMenu" or event == "SessionEnd" or event == "LoadingFinish" then
+		if state.menu == "DeathMenu" or event == "SessionEnd" then
 			Runner.resetState()
 		end
 	end)
