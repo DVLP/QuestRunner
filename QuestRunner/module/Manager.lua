@@ -50,6 +50,7 @@ end
 function Manager:setCurrent(quest)
 	if not quest:isDoable() then trace("Quest is not doable", quest.getLocalizedNameSTATIC()) end
 	self.current = quest
+	quest.currentId = 0
 	quest:start()
 end
 
