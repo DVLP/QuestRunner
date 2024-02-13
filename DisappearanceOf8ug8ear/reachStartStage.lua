@@ -54,7 +54,10 @@ function reachStartStage:isLost()
 		return true
 	end
 
-	if self.time > self.timeLimit then return true end
+	if self.time > self.timeLimit then
+		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
+		return true
+	end
 	return false
 end
 

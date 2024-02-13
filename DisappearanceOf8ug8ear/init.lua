@@ -4,7 +4,7 @@ local DoBBQuest = require("DoBBQuest")
 local log, errorLog, trace, Logger = table.unpack(require("lib/Log"))
 
 local DoBB = {
-	version = "0.0.8",
+	version = "0.2.0",
 	debug = false,
 }
 
@@ -16,6 +16,9 @@ registerForEvent("onInit", function()
 
 	QuestRunner.onReady(function ()
 		DoBBQuest.icon = QuestRunner.selector.JACK_IN_ICON
+	end)
+
+	QuestRunner.onGameStart(function ()
 		QuestRunner.Manager:addQuest(DoBBQuest)
 	end)
 end)

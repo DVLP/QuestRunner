@@ -13,6 +13,8 @@ local log, error, trace = table.unpack(require("lib/Log"))
 
 local nameKey = "disappearance_of_bb"
 local descriptionKey = "netrunners_kidnapped_bb"
+local finishedFact = "qr_disappearance_of_8ug8ear_finished"
+local failedFact = "qr_disappearance_of_8ug8ear_failed"
 local level = 55
 
 local DoBBQuest = Quest:new()
@@ -94,6 +96,9 @@ end
 function DoBBQuest:isDoable()
 	-- only if not on a QR mission
 	if self.runner.Manager.current ~= nil then return false end
+
+	-- if the quest was finished or failed it cannot be started again
+	if Game.GetQuestsSystem():GetFactStr(finishedFact) == 1 or Game.GetQuestsSystem():GetFactStr(failedFact) == 1 then return false end
 	-- not available until first mission was completed
 	if Game.GetQuestsSystem():GetFactStr("q001_done") == 0 then return false end
 	-- not available before Getting Warmer mission or if 8ug8ear was killed in it
@@ -107,10 +112,12 @@ function DoBBQuest:success()
 	self.runner.Utils.giveStreetCred(tonumber(1000))
 	Game.AddToInventory("Items.money", tonumber(5000))
 	self.runner.HUD.QuestMessage(Lang:get("quest_success"))
+	Game.GetQuestsSystem():SetFactStr(finishedFact, 1)
 end
 
 function DoBBQuest:failure()
 	GameInstance.GetAudioSystem():Play(CName"ui_jingle_quest_failed")
+	Game.GetQuestsSystem():SetFactStr(failedFact, 1)
 end
 
 function DoBBQuest:cleanup()
@@ -168,11 +175,10 @@ function DoBBQuest:sendDistressMessages()
 end
 
 function DoBBQuest:addBBNumberIfClose(questStarted)
-	if self.bbNumberAdded then return end
-	if Vector4.Distance(GetPlayer():GetWorldPosition(), self.runner.Scene.locations["IllBeDam"].waypoints[1].pos) > 400 then return end
-	self.bbNumberAdded = true
-
 	local nameKey = "8ug8earNew"
+	if self.runner.Phone.getContact(nameKey) then return end
+	if Vector4.Distance(GetPlayer():GetWorldPosition(), self.runner.Scene.locations["IllBeDam"].waypoints[1].pos) > 400 then return end
+
 	local localizedName = Lang:get("bb_new_contact")
 	local isNew = self.runner.Phone.addContact(nameKey, localizedName, Lang:get("bb_new_contact_second_line"))
 	self.runner.Phone.setContactProperty(nameKey, "questRelated", true)

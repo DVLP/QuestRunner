@@ -41,3 +41,5 @@ luac.out
 
 # Custom list
 tmp
+/freefly
+/deploy

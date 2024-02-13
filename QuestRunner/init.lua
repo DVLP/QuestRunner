@@ -14,7 +14,7 @@ local Spawner = require("module/Spawner")
 local Utils = require("module/Utils")
 
 local Runner = {
-	version = "0.0.8",
+	version = "0.2.0",
 	debugLevel = "error",
 	allQuestsContact = false,
 	isReady = false,
@@ -36,7 +36,10 @@ function Runner.resetState()
 		inCET = false,
 		timeDilation = false,
 	}
+	Phone.reset()
+	Manager:reset()
 	Runner.Manager.current = nil
+	Runner.mainContactAdded = false
 end
 
 Runner.Cron = Cron
@@ -53,9 +56,16 @@ Runner.jumboText = jumboText
 Runner.HUD = HUD
 
 local onReadyCallbacks = {}
+local onGameStartCallbacks = {}
 function Runner.onReady(callback)
 	if Runner.isReady then return callback() end
 	table.insert(onReadyCallbacks, callback)
+end
+
+-- unlike onReady which is called only once, onGameStart is triggered every time the game is started i.e. loaded from save
+function Runner.onGameStart(callback)
+	table.insert(onGameStartCallbacks, callback)
+	if Runner.gameState.inGame then callback() end
 end
 
 registerForEvent("onInit", function()
@@ -70,8 +80,22 @@ registerForEvent("onInit", function()
 		end
 	end)
 
-	GameUI.OnSessionStart(function() Runner.gameState.inGame = true end)
+	function onSessionStart()
+		Runner.gameState.inGame = true
+		for i = 1, #onGameStartCallbacks do
+			onGameStartCallbacks[i]()
+		end
+	end
+
+	GameUI.OnSessionStart(onSessionStart)
 	GameUI.OnSessionEnd(function() Runner.gameState.inGame = false end)
+
+	-- prevent saving when on a mission
+	Override('GameInstance', 'IsSavingLocked', function(this, locks, wrapped)
+		if Runner.Manager.current ~= nil then return true end
+		-- NOTE: passing "locks" argument seems to trigger an error, not passing then
+		return wrapped()
+	end)
 
 	ObserveAfter('TimeDilationEventsTransitions', 'OnEnter', function(this) Runner.gameState.timeDilation = true end)
 	ObserveAfter('TimeDilationEventsTransitions', 'OnExit', function(this) Runner.gameState.timeDilation = false end)
@@ -91,8 +115,10 @@ registerForEvent("onInit", function()
 	Phone.init()
 	Spawner.init()
 
-	-- fixes inGame state after mods reload
-	Runner.gameState.inGame = not GameUI.IsDetached()
+	-- trigger onSessionStart after mods are reloaded
+	if not GameUI.IsDetached() then
+		onSessionStart()
+	end
 	Runner.isReady = true
 
 	for i = 1, #onReadyCallbacks do

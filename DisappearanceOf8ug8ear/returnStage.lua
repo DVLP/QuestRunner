@@ -40,7 +40,7 @@ function returnStage:start()
 			self:crashComplain(3)
 		elseif force > 1.5 then
 			self:crashComplain(2)
-		elseif force > 0.2 then
+		elseif force > 0.05 then
 			self:crashComplain(1)
 		end
 		self.damageSustained = self.damageSustained + force
@@ -120,6 +120,7 @@ function returnStage:isLost()
 		return true
 	end
 	if self.time > self.timeLimit then
+		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
 		return true
 	end
 	return false

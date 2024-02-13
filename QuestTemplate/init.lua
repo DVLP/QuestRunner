@@ -3,7 +3,7 @@ local MrGuyQuest = require("MrGuyQuest")
 local log, errorLog, trace, Logger = table.unpack(require("lib/Log"))
 
 local QuestTemplate = {
-	version = "0.0.3",
+	version = "0.2.0",
 	debug = true,
 }
 
@@ -17,6 +17,9 @@ registerForEvent("onInit", function()
 	QuestRunner.onReady(function ()
 		-- For available icons see QuestRunner/lib/ui_icons.jpg
 		MrGuyQuest.icon = QuestRunner.selector.CLOCK_ICON
+	end)
+
+	QuestRunner.onGameStart(function ()
 		QuestRunner.Manager:addQuest(MrGuyQuest)
 	end)
 end)

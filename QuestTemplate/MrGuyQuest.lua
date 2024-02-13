@@ -9,6 +9,8 @@ local ReachDestinationStage = require("reachDestinationStage")
 
 local nameKey = "mrguy_quest"
 local descriptionKey = "mrguy_quest_description"
+local finishedFact = "qr_mrguy_quest_finished"
+local failedFact = "qr_mrguy_quest_failed"
 local level = 55
 
 local MrGuyQuest = Quest:new()
@@ -46,6 +48,9 @@ function MrGuyQuest:isDoable()
 	-- conditions to allow doing the quest i.e. checking a fact and returning false if not met
 	-- i.e. not available until the first game quest is finished 
 	if Game.GetQuestsSystem():GetFactStr("q001_done") == 0 then return false end
+	-- if the quest was finished or failed it cannot be started again
+	-- these conditions can be removed to allow repeating the quest over and over
+	if Game.GetQuestsSystem():GetFactStr(finishedFact) == 1 or Game.GetQuestsSystem():GetFactStr(failedFact) == 1 then return false end
 	return true
 end
 
@@ -56,10 +61,12 @@ function MrGuyQuest:success()
 	self.runner.Utils.giveStreetCred(tonumber(1000))
 	Game.AddToInventory("Items.money", tonumber(5000))
 	self.runner.HUD.QuestMessage(Lang:get("quest_success"))
+	Game.GetQuestsSystem():SetFactStr(finishedFact, 1)
 end
 
 function MrGuyQuest:failure()
 	GameInstance.GetAudioSystem():Play(CName"ui_jingle_quest_failed")
+	Game.GetQuestsSystem():SetFactStr(failedFact, 1)
 end
 
 function MrGuyQuest:phonecallResponseOptions()

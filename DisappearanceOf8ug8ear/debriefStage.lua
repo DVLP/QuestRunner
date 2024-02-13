@@ -53,6 +53,7 @@ end
 
 function debriefStage:isLost()
 	if self.time > self.timeLimit then
+		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
 		return true
 	end
 	if self.bugbearTaken then

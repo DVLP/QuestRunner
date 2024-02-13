@@ -257,6 +257,18 @@ function Phone.init()
 	end)
 end
 
+function Phone.reset()
+	Phone.contactList = {}
+	disablePreventionSystem = false
+end
+
+function Phone.getContact(nameKey)
+	for _, contact in pairs(Phone.contactList) do
+		if contact.id == nameKey then return contact end
+	end
+	return nil
+end
+
 function Phone.getContactByDisplayName(localizedName)
 	for _, contact in pairs(Phone.contactList) do
 		if contact.localizedName == localizedName then return contact end

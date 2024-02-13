@@ -10,15 +10,20 @@ function Manager:new(o)
 	o = o or {}
 	setmetatable(o, self)
 	self.__index = self
-	o.quests = {}
-	o.available = {}
-	o.current = nil
-	o.refreshAvailable = 0
+	self:reset()
 	return o
 end
 
-function Manager:addQuest(quest)
-	quest.runner = self.runner
+function Manager:reset()
+	self.quests = {}
+	self.available = {}
+	self.current = nil
+	self.refreshAvailable = 0
+end
+
+function Manager:addQuest(questP)
+	local quest = questP:new(self.runner)
+
 	table.insert(self.quests, quest)
 	log("Added quest", quest.getLocalizedNameSTATIC())
 
@@ -39,7 +44,7 @@ function Manager:getQuestOptions()
 	selector.create(Lang:get(self.runner.rootFixerId), options, function(id)
 		-- the last option is to cancel, so omit in selection
 		if id ~= #availableQuests then
-			self:setCurrent(availableQuests[id + 1].new(self))
+			self:setCurrent(availableQuests[id + 1])
 		end
 		selector.hideHub()
 	end)
