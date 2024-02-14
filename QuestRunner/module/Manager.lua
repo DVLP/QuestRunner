@@ -19,6 +19,7 @@ function Manager:reset()
 	self.available = {}
 	self.current = nil
 	self.refreshAvailable = 0
+	self:restoreAutoSaveSetting()
 end
 
 function Manager:addQuest(questP)
@@ -55,6 +56,7 @@ end
 function Manager:setCurrent(quest)
 	if not quest:isDoable() then trace("Quest is not doable", quest.getLocalizedNameSTATIC()) end
 	self.current = quest
+	self:disableAutoSave()
 	quest.currentId = 0
 	quest:start()
 end
@@ -82,6 +84,7 @@ function Manager:updateQuest(dt)
 		self.current:failure()
 		self.current:cleanup()
 		self.current = nil
+		self:restoreAutoSaveSetting()
 		return false
 	end
 	if self.current:isDone() then
@@ -89,9 +92,29 @@ function Manager:updateQuest(dt)
 		self.current:success()
 		self.current:cleanup()
 		self.current = nil
+		self:restoreAutoSaveSetting()
+		if self.originalAutoSaveSetting == true then
+			GameObject.RequestAutoSave(Game.GetPlayer(), true)
+		end
 		return false
 	end
 	return true
+end
+
+function Manager:restoreAutoSaveSetting()
+	if not self.autoSaveDisabled then return end
+	self.autoSaveDisabled = false
+	GameOptions.SetBool("SaveConfig", "AutoSaveEnabled", self.originalAutoSaveSetting)
+end
+
+function Manager:disableAutoSave()
+	if self.autoSaveDisabled then return end
+	if self.originalAutoSaveSetting == nil then
+		self.originalAutoSaveSetting = GameOptions.GetBool("SaveConfig", "AutoSaveEnabled")
+	end
+	if self.originalAutoSaveSetting == false then return end
+	self.autoSaveDisabled = true
+	GameOptions.SetBool("SaveConfig", "AutoSaveEnabled", false)
 end
 
 function Manager:getAvailable()

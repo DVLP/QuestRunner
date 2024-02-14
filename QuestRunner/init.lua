@@ -14,7 +14,7 @@ local Spawner = require("module/Spawner")
 local Utils = require("module/Utils")
 
 local Runner = {
-	version = "0.2.0",
+	version = "0.2.1",
 	debugLevel = "error",
 	allQuestsContact = false,
 	isReady = false,
@@ -70,6 +70,11 @@ end
 
 registerForEvent("onInit", function()
 	Lang:autoLocaleSet()
+
+	if Game.GetPlayer() == nil then
+		errorLog("Player is nil")
+	end
+
 	GameUI.Listen(function(state)
 		local event = state.event
 		local inMenu = Runner.Utils.isInMenu(event)
