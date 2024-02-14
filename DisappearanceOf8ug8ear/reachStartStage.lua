@@ -2,8 +2,9 @@
 local QuestStage = require("lib/abstract/QuestStage")
 local Nav = require("lib/Nav")
 local Lang = require("lib/Lang")
+local Util = require("Util")
 
-local TIME_LIMIT = 5 * 60
+local TIME_LIMIT = 10 * 60
 local nameKey = "find_bb"
 local descriptionKey = "she_cant_hold_on"
 
@@ -36,11 +37,7 @@ function reachStartStage:update(dt)
 		self.reachedLocation = true
 	end
 	self.runner.Scene:update(true)
-
-	local secLeft = math.floor(self.timeLimit - self.time)
-	if secLeft < 60 and secLeft ~= 0 then
-		if secLeft % 10 == 0 then self.runner.HUD.QuestMessage(string.format(Lang:get("hurry_up_x_left"), secLeft .. "s")) end
-	end
+	Util.showTimeLeft(self.runner.HUD.QuestMessage, self.timeLimit - self.time)
 end
 
 function reachStartStage:isDone()
@@ -51,6 +48,12 @@ end
 function reachStartStage:isLost()
 	if not self.runner.Utils.isAlive(Game.GetPlayer()) then
 		self.runner.HUD.QuestMessage(Lang:get("you_died"))
+		return true
+	end
+
+	-- if spawned but left behind and despawned
+	if self.bugbear ~= nil and not IsDefined(self.bugbear) then
+		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
 		return true
 	end
 

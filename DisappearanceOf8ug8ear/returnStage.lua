@@ -2,6 +2,7 @@
 local QuestStage  = require("lib/abstract/QuestStage")
 local Nav = require("lib/Nav")
 local Lang = require("lib/Lang")
+local Util = require("Util")
 
 local nameKey = "return_bb"
 local descriptionKey = "put_her_in_car_take_to_viktor"
@@ -87,15 +88,18 @@ function returnStage:update(dt)
 		self.runner.HUD.QuestMessage(Lang:get("leave_bugbear_on_chair"))
 	end
 
+	if not self.backToFriendly and Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChairPos) < 50 then
+		self.backToFriendly = true
+		-- changing her attitude back to friendly(when close to Viktor's) to carry her from the trunk in a civilised manner
+		self.bugbear:GetAttitudeAgent():SetAttitudeTowards(GetPlayer():GetAttitudeAgent(), EAIAttitude.AIA_Friendly)
+	end
+
 	self.time = self.time + dt
-	if self.bugbear and Vector4.Distance(self.bugbear:GetWorldPosition(), self.viktorChairPos) < 1.5 then
+	if IsDefined(self.bugbear) and Vector4.Distance(self.bugbear:GetWorldPosition(), self.viktorChairPos) < 1.5 then
 		self.reachedLocation = true
 	end
 
-	local secLeft = math.floor(self.timeLimit - self.time)
-	if secLeft < 60 and secLeft ~= 0 then
-		if secLeft % 10 == 0 then self.runner.HUD.QuestMessage(string.format(Lang:get("hurry_up_x_left"), secLeft .. "s")) end
-	end
+	Util.showTimeLeft(self.runner.HUD.QuestMessage, self.timeLimit - self.time)
 
 	self.runner.Scene:update(true)
 end
@@ -114,7 +118,12 @@ function returnStage:isLost()
 		self.runner.HUD.QuestMessage(Lang:get("you_died"))
 		return true
 	end
-	if not self.bugbear or not self.runner.Utils.isAlive(self.bugbear) then
+	-- if spawned but left behind and despawned
+	if self.bugbear ~= nil and not IsDefined(self.bugbear) then
+		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
+		return true
+	end
+	if self.bugbear ~= nil and not self.runner.Utils.isAlive(self.bugbear) then
 		Game.GetPreventionSpawnSystem():RequestDespawn(self.bugbear:GetEntityID())
 		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
 		return true

@@ -62,6 +62,7 @@ local Locale = {
 		you_shouldve_left_her = "You should've left 8ug8ear with Viktor!",
 		bugbear_is_dead = "8ug8ear is dead",
 		bugbear_is_dead_in_trunk = "8ug8ear died in your trunk!",
+		x_left = "%s left",
 		hurry_up_x_left = "Hurry up! %s left",
 		BB_hurry_up_netrunners_breaking_in = "Hurry up, their netrunners are breaking into my cyberware",
 		BB_drive_carefully = "Drive carefully I have no seatbelt",

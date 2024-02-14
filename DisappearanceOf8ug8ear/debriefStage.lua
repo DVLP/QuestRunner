@@ -2,6 +2,7 @@
 local QuestStage  = require("lib/abstract/QuestStage")
 local Lang = require("lib/Lang")
 local Nav = require("lib/Nav")
+local Util = require("Util")
 
 local nameKey = "leave"
 local descriptionKey = "viktor_must_start_the_procedure"
@@ -38,10 +39,7 @@ function debriefStage:update(dt)
 		self.bugbearTaken = true
 	end
 
-	local secLeft = math.floor(self.timeLimit - self.time)
-	if secLeft < 60 and secLeft ~= 0 then
-		if secLeft % 10 == 0 then self.runner.HUD.QuestMessage(string.format(Lang:get("hurry_up_x_left"), secLeft .. "s")) end
-	end
+	Util.showTimeLeft(self.runner.HUD.QuestMessage, self.timeLimit - self.time)
 
 	self.runner.Scene:update(true)
 end

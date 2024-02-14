@@ -2,10 +2,11 @@
 local QuestStage  = require("lib/abstract/QuestStage")
 local Nav = require("lib/Nav")
 local Lang = require("lib/Lang")
+local Util = require("Util")
 
 local nameKey = "shes_down_there"
 local descriptionKey = "find_her_and_bring_her_back"
-local TIME_LIMIT = 600
+local TIME_LIMIT = 60 * 10
 
 local searchingStage = QuestStage:new()
 
@@ -34,17 +35,14 @@ function searchingStage:update(dt)
 		self.reachedLocation = true
 	end
 
-	local secLeft = math.floor(self.timeLimit - self.time)
-	if secLeft < 60 and secLeft ~= 0 then
-		if secLeft % 10 == 0 then self.runner.HUD.QuestMessage(string.format(Lang:get("hurry_up_x_left"), secLeft .. "s")) end
-	end
+	Util.showTimeLeft(self.runner.HUD.QuestMessage, self.timeLimit - self.time)
 
 	self.runner.Scene:update(true)
 end
 
 function searchingStage:isDone()
 	-- prevents moving to the new stage until BB is ready
-	if self.bugbear and self.reachedLocation then return true end
+	if IsDefined(self.bugbear) and self.reachedLocation then return true end
 	return false
 end
 
@@ -53,9 +51,12 @@ function searchingStage:isLost()
 		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
 		return true
 	end
-
-	if not self.runner.Utils.isAlive(Game.GetPlayer()) then return true end
-	if self.bugbear and not self.runner.Utils.isAlive(self.bugbear) then
+	-- if spawned but left behind and despawned
+	if self.bugbear ~= nil and not IsDefined(self.bugbear) then
+		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
+		return true
+	end
+	if self.bugbear ~= nil and not self.runner.Utils.isAlive(self.bugbear) then
 		Game.GetPreventionSpawnSystem():RequestDespawn(self.bugbear:GetEntityID())
 		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
 		return true
