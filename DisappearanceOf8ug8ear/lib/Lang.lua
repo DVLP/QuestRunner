@@ -9,7 +9,7 @@ function Lang:new() return self end
 
 function Lang:autoLocaleSet()
 	Lang:loadTranslation(defaultLocale) -- for defaults
-	local locale = tostring(Game.GetSettingsSystem():GetVar('/language', 'OnScreen'))
+	local locale = Game.GetSettingsSystem():GetVar("/language", "OnScreen"):GetValue().value
 	Lang:loadTranslation(locale)
 	Lang:setLocale(locale)
 end
