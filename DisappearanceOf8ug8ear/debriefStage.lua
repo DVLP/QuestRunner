@@ -30,9 +30,8 @@ end
 
 function debriefStage:update(dt)
 	self.time = self.time + dt
-	if Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChair) > 30 then
+	if Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChair) > 15 then
 		self.leftTheArea = true
-		Game.GetPreventionSpawnSystem():RequestDespawn(self.bugbear:GetEntityID())
 	end
 
 	if Vector4.Distance(self.bugbear:GetWorldPosition(), self.viktorChair) > 2 then

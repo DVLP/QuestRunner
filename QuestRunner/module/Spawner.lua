@@ -1,4 +1,5 @@
 -- (c)1dentity - part of Quest Runner custom mission framework
+local Cron = require("lib/Cron")
 local log, errorLog, trace = table.unpack(require("module/Log"))
 
 local Spawner = {}
@@ -105,6 +106,46 @@ function Spawner.CanSpawn(playerPos, objPos, spawnDist)
 	return false
 end
 
+-- Send NPC far away, which triggers a despawn - workaround for broken RequestDespawn
+function Spawner.Despawn(spawnedObject)
+	if spawnedObject == nil or not IsDefined(spawnedObject) then return end
+
+	local teleportCmd = AITeleportCommand.new()
+	teleportCmd.position = Vector4.new(9999, 9999, 0, 1)
+	teleportCmd.rotation = 1
+	teleportCmd.doNavTest = false
+	spawnedObject:GetAIControllerComponent():SendCommand(teleportCmd)
+
+	-- This doesn't do anything but maybe keeps some counters clearer
+	Game.GetPreventionSpawnSystem():RequestDespawn(spawnedObject:GetEntityID())
+end
+
+function Spawner.SpawnNPCWithRetry(npcTweakDBID, pos, spawnRadius, getGround, onSpawn, attempt)
+	local useTimeout = true
+	local timeouted = false
+	Cron.After(2, function ()
+		if useTimeout then
+			if attempt == nil then
+				attempt = 0
+			elseif attempt ~= 999 then
+				attempt = attempt + 1
+			end
+			timeouted = true
+			if attempt ~= 999 and attempt > 5 then
+				return
+			end
+			Spawner.SpawnNPCWithRetry(npcTweakDBID, pos, spawnRadius, getGround, onSpawn, attempt)
+		end
+	end)
+	Spawner.SpawnNPC(npcTweakDBID, pos, spawnRadius, getGround, function(spawnedObject)
+		if timeouted then
+			Spawner.Despawn(spawnedObject)
+			return
+		end
+		useTimeout = false
+		onSpawn(spawnedObject)
+	end)
+end
 
 function Spawner.SpawnNPC(npcTweakDBID, pos, spawnRadius, getGround, onSpawn)
 	local player = Game.GetPlayer()
@@ -138,8 +179,8 @@ function Spawner.SpawnRandomLootItem(lootClassList, pos, spawnRadius, owner)
 end
 
 function Spawner.SpawnRandomMofosGroupInRadius(characterClassList, pos, spawnRadius, getGround, callback)
-	local minEnemies = math.max(1, math.ceil(spawnRadius / 2))
-	local maxEnemies = math.max(2, math.ceil(spawnRadius * 1.5))
+	local minEnemies = math.max(1, math.ceil(spawnRadius / 3))
+	local maxEnemies = math.max(2, math.ceil(spawnRadius * 1.2))
 	local enemyCount = math.floor(math.random(minEnemies, maxEnemies))
 	for i = 1, enemyCount, 1 do
 		Spawner.SpawnRandomMofoInRadius(characterClassList, pos, spawnRadius, getGround, callback)
@@ -147,7 +188,7 @@ function Spawner.SpawnRandomMofosGroupInRadius(characterClassList, pos, spawnRad
 end
 
 function Spawner.SpawnRandomMofoInRadius(characterClassList, pos, spawnRadius, getGround, callback)
-	Spawner.SpawnNPC(TweakDBID.new(characterClassList[math.random(1, #characterClassList)]), pos, spawnRadius, getGround, callback)
+	Spawner.SpawnNPCWithRetry(TweakDBID.new(characterClassList[math.random(1, #characterClassList)]), pos, spawnRadius, getGround, callback)
 end
 
 return Spawner

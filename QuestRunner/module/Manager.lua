@@ -1,6 +1,7 @@
 -- (c)1dentity - part of Quest Runner custom mission framework
 local Cron = require("lib/Cron")
 local Lang = require("module/Lang")
+local Utils = require("module/Utils")
 local log, errorLog, trace, Logger = table.unpack(require("module/Log"))
 local selector = require("lib/interactionUI")
 
@@ -87,6 +88,14 @@ function Manager:updateQuest(dt)
 		self:restoreAutoSaveSetting()
 		return false
 	end
+
+	if not Utils.isAlive(Game.GetPlayer()) then
+		self.current:cleanup()
+		self.current = nil
+		self:restoreAutoSaveSetting()
+		return false
+	end
+
 	if self.current:isDone() then
 		log(self.current.name .. " quest triggered isDone")
 		self.current:success()

@@ -57,7 +57,6 @@ function searchingStage:isLost()
 		return true
 	end
 	if self.bugbear ~= nil and not self.runner.Utils.isAlive(self.bugbear) then
-		Game.GetPreventionSpawnSystem():RequestDespawn(self.bugbear:GetEntityID())
 		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
 		return true
 	end

@@ -73,16 +73,14 @@ end
 
 function DoBBQuest:SpawnBugBearWhenReady()
 	if not self.runner.Spawner.CanSpawn(Game.GetPlayer():GetWorldPosition(), self.bbSpawnPos, 60) then
-		self.runner.Cron.After(0.5, function ()
+		self.retrySpawnBBTimerId = self.runner.Cron.After(2, function ()
 			self:SpawnBugBearWhenReady()
 		end)
 		return
 	end
-	if self.bugbearSpawnRequested then
-		return
-	end
+	if self.bugbearSpawnRequested then return end
 	self.bugbearSpawnRequested = true
-	self.runner.Spawner.SpawnNPC(TweakDBID.new(0x5F7049F1, 0x1F), self.bbSpawnPos, self.bbSpawnPos.w, false, function(spawnedObject)
+	self.runner.Spawner.SpawnNPCWithRetry(TweakDBID.new(0x5F7049F1, 0x1F), self.bbSpawnPos, self.bbSpawnPos.w, false, function(spawnedObject)
 		-- Warning - this should also trigger on respawn
 		self.bugbear = spawnedObject
 		self.stages[1].bugbear = self.bugbear
@@ -90,7 +88,7 @@ function DoBBQuest:SpawnBugBearWhenReady()
 		self.stages[3].bugbear = self.bugbear
 		self.stages[4].bugbear = self.bugbear
 		StatusEffectHelper.ApplyStatusEffect(spawnedObject, TweakDBID.new("BaseStatusEffect.Unconscious"), spawnedObject:GetEntityID())
-	end)
+	end, 999)
 end
 
 function DoBBQuest:isDoable()
@@ -122,6 +120,8 @@ end
 
 function DoBBQuest:cleanup()
 	self.runner.Cron.Halt(self.isInCombatTimerId)
+	self.runner.Cron.Halt(self.retrySpawnBBTimerId)
+	self.runner.Spawner.Despawn(self.bugbear)
 end
 
 function DoBBQuest:phonecallResponseOptions()
