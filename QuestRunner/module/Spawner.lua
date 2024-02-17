@@ -16,10 +16,10 @@ function Spawner.init()
 		local req
 		local reqOnSpawnIndex
 
-		for j, awaitingReq in ipairs(awaitingSpawnCallbacks) do
+		for i, awaitingReq in ipairs(awaitingSpawnCallbacks) do
 			if awaitingReq.reqId == reqId then
 				req = awaitingReq
-				reqOnSpawnIndex = j
+				reqOnSpawnIndex = i
 			end
 		end
 
@@ -40,6 +40,7 @@ function Spawner.init()
 				wnpc.isSpawning = false
 				wnpc.spawned = true
 				wnpc.spawnedAtLeastOnce = true
+				wnpc.spawnedTime = time
 				wnpc.onSpawn(spawnedObject)
 				-- end
 			end
@@ -93,7 +94,7 @@ function Spawner.Update(dt)
 
 	-- Detect if spawned NPC fell through the floor
 	for i, wnpc in pairs(worldNPCs) do
-		if wnpc.spawned and not wnpc.isSpawning and Vector4.Distance2D(wnpc.spawnPos, wnpc.pos) < 2 and wnpc.spawnPos.z - wnpc.pos.z > 3 then
+		if wnpc.spawned and not wnpc.isSpawning and (time - wnpc.spawnedTime < 3) and Vector4.Distance2D(wnpc.spawnPos, wnpc.pos) < 2 and wnpc.spawnPos.z - wnpc.pos.z > 3 then
 			wnpc.pos = Vector4.new(wnpc.spawnPos)
 			Spawner.Despawn(wnpc.ref)
 			wnpc.spawned = false

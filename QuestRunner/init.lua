@@ -14,7 +14,7 @@ local Spawner = require("module/Spawner")
 local Utils = require("module/Utils")
 
 local Runner = {
-	version = "0.3.0",
+	version = "0.3.2",
 	debugLevel = "error",
 	allQuestsContact = false,
 	isReady = false,

@@ -4,7 +4,7 @@
 	-- support for new contact list type
 	-- new hack to get JournalNotificationQueue instance after mod reload
 
-local log, logError, trace = table.unpack(require("module/Log"))
+local log, errorLog, trace = table.unpack(require("module/Log"))
 local Cron = require("lib/Cron")
 
 Phone = {
@@ -278,7 +278,10 @@ end
 
 function Phone.setContactProperty(nameId, property, value)
 	local contact = Phone.contactList[nameId]
-	if not contact then log("Phone.setContactProperty: no such contact", nameId) end
+	if not contact then
+		errorLog("Phone.setContactProperty: no such contact", nameId)
+		return
+	end
 	contact[property] = value
 end
 
@@ -346,7 +349,7 @@ end
 function Phone.sendMessage(nameId, message, suppressNotification)
 	local contact = Phone.contactList[nameId]
 	if not contact then
-		logError("Phone: Contact does not exist", nameId)
+		errorLog("Phone: Contact does not exist", nameId)
 		return
 	end
 	if not suppressNotification then

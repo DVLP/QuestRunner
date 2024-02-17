@@ -29,7 +29,6 @@ function returnStage:start()
 	self.damageSustained = 0
 	self.timeStart = self.time
 	self.timeLimit = self.time + TIME_LIMIT
-	self.reachedLocation = false
 	self.shownLeaveMessage = false
 	self.bbStartPos = self.runner.Scene.locations["IllBeDam"].payloads[1].pos
 
@@ -95,9 +94,6 @@ function returnStage:update(dt)
 	end
 
 	self.time = self.time + dt
-	if IsDefined(self.bugbear) and Vector4.Distance(self.bugbear:GetWorldPosition(), self.viktorChairPos) < 1.5 then
-		self.reachedLocation = true
-	end
 
 	Util.showTimeLeft(self.runner.HUD.QuestMessage, self.timeLimit - self.time)
 
@@ -105,7 +101,9 @@ function returnStage:update(dt)
 end
 
 function returnStage:isDone()
-	if self.reachedLocation then return true end
+	if IsDefined(self.bugbear) and Vector4.Distance(self.bugbear:GetWorldPosition(), self.viktorChairPos) < 1.5 then
+		return true
+	end
 	return false
 end
 
