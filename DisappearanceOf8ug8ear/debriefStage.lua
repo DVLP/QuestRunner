@@ -30,7 +30,7 @@ end
 
 function debriefStage:update(dt)
 	self.time = self.time + dt
-	if Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChair) > 15 then
+	if Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChair) > 20 then
 		self.leftTheArea = true
 	end
 
