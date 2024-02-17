@@ -67,28 +67,24 @@ end
 
 function DoBBQuest:RequestSpawnBB()
 	local bbSpawnConfig = self.runner.Scene.locations["IllBeDam"].npcs[1]
-	self.bbSpawnPos = bbSpawnConfig.pos
-	self:SpawnBugBearWhenReady()
-end
+	local bbSpawnPos = Vector4.new(bbSpawnConfig.pos)
 
-function DoBBQuest:SpawnBugBearWhenReady()
-	if not self.runner.Spawner.CanSpawn(Game.GetPlayer():GetWorldPosition(), self.bbSpawnPos, 60) then
-		self.retrySpawnBBTimerId = self.runner.Cron.After(2, function ()
-			self:SpawnBugBearWhenReady()
-		end)
-		return
-	end
-	if self.bugbearSpawnRequested then return end
-	self.bugbearSpawnRequested = true
-	self.runner.Spawner.SpawnNPCWithRetry(TweakDBID.new(0x5F7049F1, 0x1F), self.bbSpawnPos, self.bbSpawnPos.w, false, function(spawnedObject)
-		-- Warning - this should also trigger on respawn
+	self.runner.Spawner.SpawnNPC(TweakDBID.new(0x5F7049F1, 0x1F), bbSpawnPos, bbSpawnPos.w, 60, false, function(spawnedObject)
+		-- Note: Getting too far from NPC makes it despawn. It automatically respawns as the player gets closer and this callback triggers again
 		self.bugbear = spawnedObject
 		self.stages[1].bugbear = self.bugbear
 		self.stages[2].bugbear = self.bugbear
 		self.stages[3].bugbear = self.bugbear
 		self.stages[4].bugbear = self.bugbear
 		StatusEffectHelper.ApplyStatusEffect(spawnedObject, TweakDBID.new("BaseStatusEffect.Unconscious"), spawnedObject:GetEntityID())
-	end, 999)
+	end, function()
+		-- Despawn when too far - does not mean dead. We're clearing references here for simpler logic
+		self.bugbear = nil
+		self.stages[1].bugbear = nil
+		self.stages[2].bugbear = nil
+		self.stages[3].bugbear = nil
+		self.stages[4].bugbear = nil
+	end)
 end
 
 function DoBBQuest:isDoable()

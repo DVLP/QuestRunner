@@ -118,12 +118,7 @@ function returnStage:isLost()
 		self.runner.HUD.QuestMessage(Lang:get("you_died"))
 		return true
 	end
-	-- if spawned but left behind and despawned
-	if self.bugbear ~= nil and not IsDefined(self.bugbear) then
-		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
-		return true
-	end
-	if self.bugbear ~= nil and not self.runner.Utils.isAlive(self.bugbear) then
+	if IsDefined(self.bugbear) and not self.runner.Utils.isAlive(self.bugbear) then
 		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
 		return true
 	end

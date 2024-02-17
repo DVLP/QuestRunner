@@ -14,7 +14,7 @@ local Spawner = require("module/Spawner")
 local Utils = require("module/Utils")
 
 local Runner = {
-	version = "0.2.2",
+	version = "0.3.0",
 	debugLevel = "error",
 	allQuestsContact = false,
 	isReady = false,
@@ -38,6 +38,7 @@ function Runner.resetState()
 	}
 	Phone.reset()
 	Manager:reset()
+	Spawner.reset()
 	Runner.Manager.current = nil
 	Runner.mainContactAdded = false
 end
@@ -137,6 +138,7 @@ registerForEvent("onUpdate", function(dt)
 	Cron.Update(dt)
 	ui.update()
 	Manager:update(dt)
+	Spawner.Update(dt)
 
 	if Runner.debounce then return end
 	Runner.debounce = true

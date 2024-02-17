@@ -51,12 +51,6 @@ function reachStartStage:isLost()
 		return true
 	end
 
-	-- if spawned but left behind and despawned
-	if self.bugbear ~= nil and not IsDefined(self.bugbear) then
-		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
-		return true
-	end
-
 	if self.time > self.timeLimit then
 		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
 		return true

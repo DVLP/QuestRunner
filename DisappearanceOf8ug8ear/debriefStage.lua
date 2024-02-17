@@ -61,7 +61,7 @@ function debriefStage:isLost()
 	if not self.runner.Utils.isAlive(Game.GetPlayer()) then
 		return true
 	end
-	if  not self.runner.Utils.isAlive(self.bugbear) then
+	if IsDefined(self.bugbear) and not self.runner.Utils.isAlive(self.bugbear) then
 		self.runner.HUD.QuestMessage(Lang:get("bugbear_is_dead"))
 		return true
 	end

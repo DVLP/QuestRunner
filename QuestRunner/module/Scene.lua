@@ -107,10 +107,11 @@ function Scene:update(isActive)
 			local locL = Vector4.new(pos)
 			locL.w = 1;
 			if not self.doneSpawnpoints[i] then
-				if Spawner.CanSpawn(plPos, locL, spawnpoint.spawnDistance) then
+				if Spawner.CanSpawn(plPos, locL, spawnpoint.spawnDistance, not spawnpoint.flat) then
 					self.doneSpawnpoints[i] = true
-					Spawner.SpawnRandomMofosGroupInRadius(self.enemyClassList, pos, pos.w, not spawnpoint.flat, function(spawnedObject)
+					Spawner.SpawnRandomMofosGroupInRadius(self.enemyClassList, pos, pos.w, spawnpoint.spawnDistance, not spawnpoint.flat, function(spawnedObject)
 						self.onEnemySpawn(spawnedObject)
+						self.firstEnemy = spawnedObject
 					end)
 				end
 			end
@@ -121,7 +122,7 @@ function Scene:update(isActive)
 			local locL = Vector4.new(pos)
 			locL.w = 1;
 			if not self.donePayloads[i] then
-				if Spawner.CanSpawn(plPos, locL, 100) then
+				if self.firstEnemy and Spawner.CanSpawn(plPos, locL, 100) then
 					self.donePayloads[i] = true
 					Spawner.SpawnRandomLootItem(self.lootClassList, locL, locL.w, self.firstEnemy)
 				end

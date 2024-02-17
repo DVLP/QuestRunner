@@ -20,7 +20,7 @@ local Locations = {
 
 			{ pos = { x = 883.9316, y = -2906.5752, z = 205.94937, w = 2 }, flat = false, }, -- nearby hill, group hanging out
 
-			{ pos = { x = 963.09155, y = -2909.844, z = 186.15279, w = 6 }, flat = false, }, -- first landing downstairs
+			{ pos = { x = 963.29155, y = -2909.644, z = 185.95279, w = 6 }, flat = false, }, -- first landing downstairs
 			{ pos = { x = 991.70306, y = -2897.9082, z = 185.65279, w = 6 }, flat = true, }, -- a square behind the first gate
 
 			{ pos = { x = 1006.3372, y = -2892.48, z = 187.67316, w = 0.3 }, flat = true,}, -- small bridge start
@@ -48,7 +48,7 @@ local Locations = {
 
 		npcs = {
 			-- 0x5F7049F1 is bugbear
-			{ id = 0x5F7049F1, pos = { x = 1218.3695, y = -2870.9814, z = 185.65279, w = 1 } }
+			{ id = 0x5F7049F1, pos = { x = 1218.8695, y = -2870.8114, z = 185.65279, w = 0.5 } }
 		},
 	},
 }
