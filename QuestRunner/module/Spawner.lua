@@ -23,6 +23,11 @@ function Spawner.init()
 			end
 		end
 
+		if not req then
+			log("Spawn request not found - ignore if that's police")
+			return
+		end
+
 		local wnpc = worldNPCs[req.npcID]
 		if not wnpc then
 			errorLog("Spawned request doesn't match npc ID")

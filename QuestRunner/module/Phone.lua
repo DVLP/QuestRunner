@@ -222,38 +222,41 @@ function Phone.init()
 
 	Observe("NewHudPhoneGameController", "CallSelectedContact", function(this, contactData)
 		local contact = Phone.getContactByDisplayName(contactData.localizedName)
+		Phone.setupOutgoingCall(contact)
+	end)
+	Observe("PhoneMessagePopupGameController", "CallContact", function(this)
+		local contact = Phone.getContact(this.contactEntry:GetId())
+		Phone.setupOutgoingCall(contact)
+	end)
+end
 
-		if contact then
-			if not contact.callback then
-				log("Phone: No action for call assigned for", contact.localizedName)
-				return
+function Phone.setupOutgoingCall(contact)
+	if not contact then return end
+	if not contact.callback then
+		log("Phone: No action for call assigned for", contact.localizedName)
+		return
+	end
+	Phone.replaceDialedName = contact.localizedName
+	if EnumInt(Game.GetScriptableSystemsContainer():Get("PreventionSystem"):GetHeatStage()) == 0 then
+		Cron.After(2.5, function()
+			local action = contact.callback()
+			if not action and Phone.bar then
+				-- if callback doesn't return true show "failed" popup
+				Phone.bar:OnActivated(true)
+				Phone.bar:UpdateTimerHeader(Phone.noConnectionMessage)
+				Phone.bar:OnActivated(false)
 			end
-			Phone.replaceDialedName = contactData.localizedName
-			if EnumInt(Game.GetScriptableSystemsContainer():Get("PreventionSystem"):GetHeatStage()) == 0 then
-				Cron.After(2.5, function()
-					local action = contact.callback()
-					if not action and Phone.bar then
-						-- if callback doesn't return true show "failed" popup
-						Phone.bar:OnActivated(true)
-						Phone.bar:UpdateTimerHeader(Phone.noConnectionMessage)
-						Phone.bar:OnActivated(false)
-					end
-					Phone.disablePreventionSystem = true
-				end)
-			end
+			Phone.disablePreventionSystem = true
+		end)
+	end
 
-			Cron.After(5, function()
-				Game.GetScriptableSystemsContainer():Get("PhoneSystem"):QueueRequest(PhoneTimeoutRequest.new())
-				Phone.replaceDialedName = nil
-			end)
-
-			Cron.After(7, function()
-				Phone.disablePreventionSystem = false
-			end)
-		end
+	Cron.After(5, function()
+		Game.GetScriptableSystemsContainer():Get("PhoneSystem"):QueueRequest(PhoneTimeoutRequest.new())
+		Phone.replaceDialedName = nil
 	end)
 
-	Cron.Every(1, function()
+	Cron.After(7, function()
+		Phone.disablePreventionSystem = false
 	end)
 end
 
