@@ -85,6 +85,17 @@ function returnStage:update(dt)
 	if not self.shownLeaveMessage and Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChairPos) < 10 then
 		self.shownLeaveMessage = true
 		self.runner.HUD.QuestMessage(Lang:get("leave_bugbear_on_chair"))
+
+		-- Illuminate Viktor's surgery chair
+		local transform = Game.GetPlayer():GetWorldTransform()
+		transform:SetPosition(Vector4.new(-1546.3679, 1235.0557, 14.410301, 1))
+		transform:SetOrientationEuler(EulerAngles.new(0, -90, 0))
+
+		local entityID = WorldFunctionalTests.SpawnEntity("base\\flashlight\\light.ent", transform, '')
+		-- TODO: Adjust shade and color. Needs a check if entity is available
+		-- local light = Game.FindEntityByID(entityID)
+		-- light:SetStrength(100)
+		-- light:SetColor(Color.new({Red = 100, Green = 0.1, Blue = 0.1}))
 	end
 
 	if not self.backToFriendly and Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChairPos) < 50 then
