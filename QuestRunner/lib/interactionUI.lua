@@ -24,8 +24,7 @@ function ui.create(title, options, callback)
 	local hub = ui.createHub(title, choices)
 	ui.callback = callback
 	ui.showHub(hub)
-	-- impose NoCombat restriction - this may be not enough
-	PlayerGameplayRestrictions.PushForceRefreshInputHintsEventToPSM(Game.GetPlayer())
+	StatusEffectHelper.ApplyStatusEffect(Game.GetPlayer(), "GameplayRestriction.NoCombat")
 end
 
 ---@param localizedName string
@@ -101,7 +100,7 @@ function ui.hideHub() -- Hides the hub
 	ui.baseControler:UpdateListBlackboard()
 
 	ui.hubShown = false
-	PlayerGameplayRestrictions.RemoveAllGameplayRestrictions(Game.GetPlayer())
+	StatusEffectHelper.RemoveStatusEffect(Game.GetPlayer(), "GameplayRestriction.NoCombat")
 end
 
 -- function ui.registerChoiceCallback(choiceIndex, callback) -- Register a callback for a choice via index, starting at 1

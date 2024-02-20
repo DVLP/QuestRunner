@@ -29,6 +29,7 @@ function Phone.init()
 	end)
 
 	Override("PhoneDialerLogicController", "PopulateListData", function(this, contactDataArray, selectIndex, itemHash, wrapped)
+		wrapped(contactDataArray, selectIndex, itemHash)
 		local listType = #contactDataArray > 0 and contactDataArray[1].type or MessengerContactType.Contact
 		if listType == MessengerContactType.SingleThread or listType == MessengerContactType.MultiThread then listType = MessengerContactType.SingleThread end
 

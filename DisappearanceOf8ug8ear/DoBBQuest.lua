@@ -69,7 +69,7 @@ function DoBBQuest:RequestSpawnBB()
 	local bbSpawnConfig = self.runner.Scene.locations["IllBeDam"].npcs[1]
 	local bbSpawnPos = Vector4.new(bbSpawnConfig.pos)
 
-	self.runner.Spawner.SpawnNPC(TweakDBID.new(0x5F7049F1, 0x1F), bbSpawnPos, bbSpawnPos.w, 60, false, function(spawnedObject)
+	self.bugbearWNPC = self.runner.Spawner.SpawnNPC(TweakDBID.new(0x5F7049F1, 0x1F), bbSpawnPos, bbSpawnPos.w, 60, false, function(spawnedObject)
 		-- Note: Getting too far from NPC makes it despawn. It automatically respawns as the player gets closer and this callback triggers again
 		self.bugbear = spawnedObject
 		self.stages[1].bugbear = self.bugbear
@@ -77,7 +77,7 @@ function DoBBQuest:RequestSpawnBB()
 		self.stages[3].bugbear = self.bugbear
 		self.stages[4].bugbear = self.bugbear
 		StatusEffectHelper.ApplyStatusEffect(spawnedObject, TweakDBID.new("BaseStatusEffect.Unconscious"), spawnedObject:GetEntityID())
-	end, function()
+	end, function(isRemove)
 		-- Despawn when too far - does not mean dead. We're clearing references here for simpler logic
 		self.bugbear = nil
 		self.stages[1].bugbear = nil
@@ -117,7 +117,8 @@ end
 function DoBBQuest:cleanup()
 	self.runner.Cron.Halt(self.isInCombatTimerId)
 	self.runner.Cron.Halt(self.retrySpawnBBTimerId)
-	self.runner.Spawner.Despawn(self.bugbear)
+	self.runner.Spawner.Remove(self.bugbearWNPC.id)
+	self.runner.Spawner.reset()
 end
 
 function DoBBQuest:phonecallResponseOptions()

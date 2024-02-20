@@ -12,7 +12,7 @@ local SPAWN_TIMEOUT = 5
 function Spawner.init()
 	Observe('PreventionSystem', 'OnPreventionUnitSpawnedRequest', function(_, request)
 		local result = request.requestResult
-		local reqId = request.requestResult.requestID
+		local reqId = result.requestID
 		local req
 		local reqOnSpawnIndex
 
@@ -56,7 +56,7 @@ function Spawner.init()
 	Observe("PreventionSystem", "OnPreventionUnitDespawnedRequest", function(this, request)
 		local wnpc = Spawner.GetNPCByEntityID(request.entityID)
 		if not wnpc then
-			-- Not necessarily an error, npc not controlled by us i.e. police
+			-- Not necessarily an error, npc not controlled by us i.e. police or removed from worldNPCs by Spawner.Remove
 			log("OnPreventionUnitDespawnedRequest: NPC for entity ID not found")
 			return
 		end
@@ -240,6 +240,17 @@ function Spawner.Despawn(spawnedObject)
 	Game.GetPreventionSpawnSystem():RequestDespawn(spawnedObject:GetEntityID())
 end
 
+function Spawner.Remove(npcID)
+	local wnpc = worldNPCs[npcID]
+	if not wnpc then
+		errorLog("Spawner.Remove: NPC with given ID doesn't exist")
+		return
+	end
+	worldNPCs[npcID] = nil
+	if IsDefined(wnpc.ref) then Spawner.Despawn(wnpc.ref) end
+	if wnpc.onDespawn then wnpc.onDespawn(true) end
+end
+
 local npcID = 1
 function Spawner.SpawnNPC(npcTweakDBID, pos, spawnRadius, spawnDistance, getGround, onSpawn, onDespawn)
 	local newNpcID = npcID
@@ -260,6 +271,7 @@ function Spawner.SpawnNPC(npcTweakDBID, pos, spawnRadius, spawnDistance, getGrou
 		onSpawn = onSpawn,
 		onDespawn = onDespawn,
 	}
+	return worldNPCs[npcID]
 end
 
 function Spawner.RequestNPCSpawn(npcID, npcTweakDBID, pos, spawnRadius, getGround)
