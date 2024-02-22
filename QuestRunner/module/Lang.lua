@@ -2,6 +2,7 @@ local log, errorLog, trace = table.unpack(require("module/Log"))
 local Lang = {
 	locale = "en-us",
 	locales = {},
+	gender = "male",
 }
 local defaultLocale = "en-us"
 function Lang:new() return self end
@@ -11,6 +12,7 @@ function Lang:autoLocaleSet()
 	local locale = Game.GetSettingsSystem():GetVar("/language", "OnScreen"):GetValue().value
 	Lang:loadTranslation(locale)
 	Lang:setLocale(locale)
+	self.gender = (GetPlayer():GetResolvedGenderName() == CName("Male")) and "male" or "female"
 end
 
 function Lang:loadTranslation(locale)
@@ -64,6 +66,23 @@ function Lang:buildReverseLookupIndex()
 	end
 end
 
+function formatForGender(string, gender)
+	local pattern = "([A-Za-z])%s*Æ%s*{([^}]+)}"
+	
+	local result = string.gsub(string, pattern, function(letter, options)
+		local optionArr = {}
+		for option in options:gmatch("[^|]+") do
+			table.insert(optionArr, option)
+		end
+		local index = (gender == "male") and 1 or 2
+		return letter .. " " .. optionArr[index]
+	end)
+	if string.find(result, pattern) then
+		return formatForGender(result, gender)
+	end
+	return result
+end
+
 function Lang:get(key)
 	if not self.current then
 		errorLog("Lang: Locale not set. Notice: Lang:get cannot be used before onInit CET event")
@@ -71,7 +90,7 @@ function Lang:get(key)
 	end
 	local value = self.current[key] or self.default[key]
 	if not value then errorLog("Error, key not found", key) end
-	return value
+	return formatForGender(value, self.gender)
 end
 
 function Lang:getKeyByValue(text)
