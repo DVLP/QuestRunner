@@ -93,6 +93,14 @@ function Cron.Every(timeout, callback, data)
 	return addTimer(timeout, true, callback, data)
 end
 
+-- Keeps trying with a time interval and with maxIterations limit
+-- To keep trying the callback must return false (not nil), so there's no need to return anything if the callback is successful
+function Cron.RunWithRetry(interval, maxIterations, callback, data)
+	local timer = addTimer(interval, true, callback, data)
+	Cron.getTimer(timer).maxIterations = maxIterations
+	return timer
+end
+
 --@param timerId any
 --@return void
 function Cron.Halt(timerId)
@@ -148,14 +156,30 @@ function Cron.Update(delta)
 				timer.delay = timer.delay - delta
 
 				if timer.delay <= 0 then
+					local removed = false
 					if timer.recurring then
 						timer.delay = timer.delay + timer.timeout
+						if timer.maxIterations ~= nil then
+							timer.maxIterations = timer.maxIterations - 1
+							if timer.maxIterations <= 0 then
+								table.remove(Cron.timers, i)
+								i = i - 1
+								removed = true
+							end
+						end
 					else
 						table.remove(Cron.timers, i)
 						i = i - 1
+						removed = true
 					end
 
-					timer.callback(timer.args)
+					local result = timer.callback(timer.args)
+					if timer.maxIterations ~= nil then
+						if result ~= false and not removed then
+							table.remove(Cron.timers, i)
+							i = i - 1
+						end
+					end
 				end
 			end
 		end

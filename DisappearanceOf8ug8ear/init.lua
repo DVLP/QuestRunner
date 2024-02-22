@@ -4,7 +4,7 @@ local DoBBQuest = require("DoBBQuest")
 local log, errorLog, trace, Logger = table.unpack(require("lib/Log"))
 
 local DoBB = {
-	version = "0.3.6",
+	version = "0.3.8",
 	debug = false,
 }
 
@@ -18,9 +18,8 @@ registerForEvent("onInit", function()
 		DoBBQuest.icon = QuestRunner.selector.JACK_IN_ICON
 	end)
 
-	if QuestRunner.onGameStart == nil then
-		errorLog("Outdated version of Quest Runner dependency detected. onGameStart not supported!")
-		return
+	if QuestRunner.Lighting == nil then
+		errorLog("Outdated version of Quest Runner dependency detected. Lighting not supported!")
 	end
 
 	QuestRunner.onGameStart(function ()
