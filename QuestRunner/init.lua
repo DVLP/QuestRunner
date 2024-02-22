@@ -14,7 +14,7 @@ local Spawner = require("module/Spawner")
 local Utils = require("module/Utils")
 
 local Runner = {
-	version = "0.3.6",
+	version = "0.3.7",
 	debugLevel = "error",
 	allQuestsContact = false,
 	isReady = false,
@@ -131,6 +131,14 @@ registerForEvent("onInit", function()
 		onReadyCallbacks[i]()
 	end
 	onReadyCallbacks = {}
+end)
+
+local totalEntitiesLimitKey = "PreventionSystem.setup.totalEntitiesLimit"
+local minEntitiesLimit = 100
+registerForEvent("onTweak", function()
+	-- The default is 35, not enough for larger battles
+	local maxEntities = TweakDB:GetFlat(totalEntitiesLimitKey)
+	if maxEntities < minEntitiesLimit then TweakDB:SetFlat(totalEntitiesLimitKey, minEntitiesLimit) end
 end)
 
 registerForEvent("onUpdate", function(dt)
