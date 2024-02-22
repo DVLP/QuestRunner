@@ -4,7 +4,7 @@ local DoBBQuest = require("DoBBQuest")
 local log, errorLog, trace, Logger = table.unpack(require("lib/Log"))
 
 local DoBB = {
-	version = "0.3.9",
+	version = "0.3.11",
 	debug = false,
 }
 
@@ -15,6 +15,7 @@ registerForEvent("onInit", function()
 	-- QuestRunner.overrideLogLevel("trace") -- setting logging level of QuestRunner - use for development only
 
 	QuestRunner.onReady(function ()
+		Lang:addExternalLang(QuestRunner.Lang)
 		DoBBQuest.icon = QuestRunner.selector.JACK_IN_ICON
 	end)
 

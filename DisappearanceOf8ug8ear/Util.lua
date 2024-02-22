@@ -8,10 +8,10 @@ function Util.showTimeLeft(ShowMessage, secLeftFloat)
 	local secLeft = math.floor(secLeftFloat)
 	if secLeft % 60 == 0 and secLeft ~= 0 then
 		local messageTemplate = secLeft <= 180 and Lang:get("hurry_up_x_left") or Lang:get("x_left")
-		ShowMessage(string.format(messageTemplate, math.floor(secLeft / 60) .. " min"))
+		ShowMessage(string.format(messageTemplate, math.floor(secLeft / 60) .. " " .. Lang:get("time_min")))
 	end
 	if secLeft < 60 and secLeft ~= 0 and secLeft % 10 == 0 then
-		ShowMessage(string.format(Lang:get("hurry_up_x_left"), secLeft .. "s"))
+		ShowMessage(string.format(Lang:get("hurry_up_x_left"), secLeft .. Lang:get("time_s")))
 	end
 end
 

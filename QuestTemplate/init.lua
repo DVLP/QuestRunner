@@ -3,7 +3,7 @@ local MrGuyQuest = require("MrGuyQuest")
 local log, errorLog, trace, Logger = table.unpack(require("lib/Log"))
 
 local QuestTemplate = {
-	version = "0.3.9",
+	version = "0.3.11",
 	debug = true,
 }
 
@@ -15,6 +15,7 @@ registerForEvent("onInit", function()
 	-- QuestRunner.overrideLogLevel("trace") -- setting logging level of QuestRunner
 
 	QuestRunner.onReady(function ()
+		Lang:addExternalLang(QuestRunner.Lang)
 		-- For available icons see QuestRunner/lib/ui_icons.jpg
 		MrGuyQuest.icon = QuestRunner.selector.CLOCK_ICON
 	end)

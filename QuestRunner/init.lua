@@ -15,7 +15,7 @@ local Utils = require("module/Utils")
 local Lighting = require("module/Lighting")
 
 local Runner = {
-	version = "0.3.9",
+	version = "0.3.11",
 	debugLevel = "error",
 	allQuestsContact = false,
 	isReady = false,

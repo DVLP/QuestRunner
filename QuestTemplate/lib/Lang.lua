@@ -4,6 +4,7 @@ local Lang = {
 	locale = "en-us",
 	locales = {},
 	gender = "male",
+	extLangs = {},
 }
 local defaultLocale = "en-us"
 function Lang:new() return self end
@@ -23,6 +24,10 @@ function Lang:loadTranslation(locale)
 		return
 	end
 	self:addTranslation(localeFile)
+end
+
+function Lang:addExternalLang(extLang)
+	table.insert(self.extLangs, extLang)
 end
 
 function Lang:addTranslation(translation)
@@ -83,13 +88,22 @@ function formatForGender(string, gender)
 	return result
 end
 
-function Lang:get(key)
+function Lang:get(key, isOptional)
 	if not self.current then
 		errorLog("Lang: Locale not set. Notice: Lang:get cannot be used before onInit CET event")
 		return
 	end
 	local value = self.current[key] or self.default[key]
-	if not value then errorLog("Error, key not found", key) end
+	if not value then
+		for i, extLang in ipairs(self.extLangs) do
+			value = extLang:get(key, true)
+			if value then break end
+		end
+		if not value then
+			if isOptional then return nil end
+			errorLog("Error, key not found", key)
+		end
+	end
 	return formatForGender(value, self.gender)
 end
 
