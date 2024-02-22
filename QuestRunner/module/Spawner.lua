@@ -10,8 +10,7 @@ local lastUpdate = 0
 local UPDATE_INTERVAL = 1
 local SPAWN_TIMEOUT = 5
 function Spawner.init()
-	Observe('PreventionSystem', 'OnPreventionUnitSpawnedRequest', function(_, request)
-		local result = request.requestResult
+	ObserveBefore('PreventionSpawnSystem', 'SpawnRequestFinished', function(_, result)
 		local reqId = result.requestID
 		local req
 		local reqOnSpawnIndex
@@ -46,15 +45,19 @@ function Spawner.init()
 				wnpc.spawned = true
 				wnpc.spawnedAtLeastOnce = true
 				wnpc.spawnedTime = time
-				wnpc.onSpawn(spawnedObject)
+
+				-- workaround for other mods interfering with freshly spawned NPCs
+				Cron.After(0.1, function()
+					wnpc.onSpawn(spawnedObject)
+				end)
 				-- end
 			end
 		end
 		table.remove(awaitingSpawnCallbacks, reqOnSpawnIndex)
 	end)
 
-	Observe("PreventionSystem", "OnPreventionUnitDespawnedRequest", function(this, request)
-		local wnpc = Spawner.GetNPCByEntityID(request.entityID)
+	ObserveBefore("PreventionSpawnSystem", "DespawnCallback", function(this, entityID)
+		local wnpc = Spawner.GetNPCByEntityID(entityID)
 		if not wnpc then
 			-- Not necessarily an error, npc not controlled by us i.e. police or removed from worldNPCs by Spawner.Remove
 			log("OnPreventionUnitDespawnedRequest: NPC for entity ID not found")

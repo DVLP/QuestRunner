@@ -28,59 +28,61 @@ function Phone.init()
 		wrapped()
 	end)
 
-	Override("PhoneDialerLogicController", "PopulateListData", function(this, contactDataArray, selectIndex, itemHash, wrapped)
-		wrapped(contactDataArray, selectIndex, itemHash)
-		local listType = #contactDataArray > 0 and contactDataArray[1].type or MessengerContactType.Contact
-		if listType == MessengerContactType.SingleThread or listType == MessengerContactType.MultiThread then listType = MessengerContactType.SingleThread end
+	Cron.After(0.1, function() -- delay Override - a hack if other mods are also overriding this and not calling the wrapped method
+		Override("PhoneDialerLogicController", "PopulateListData", function(this, contactDataArray, selectIndex, itemHash, wrapped)
+			wrapped(contactDataArray, selectIndex, itemHash)
+			local listType = #contactDataArray > 0 and contactDataArray[1].type or MessengerContactType.Contact
+			if listType == MessengerContactType.SingleThread or listType == MessengerContactType.MultiThread then listType = MessengerContactType.SingleThread end
 
-		-- when pressing R on contact list a temporary list opens with one entry which automatically clicks
-		if #contactDataArray == 0 then listType = MessengerContactType.SingleThread end
+			-- when pressing R on contact list a temporary list opens with one entry which automatically clicks
+			if #contactDataArray == 0 then listType = MessengerContactType.SingleThread end
 
-		-- dont add to the list with one entry - it's a temporary with a single thread
-		if #contactDataArray ~= 1 then
-			for _, contact in pairs(Phone.contactList) do
+			-- dont add to the list with one entry - it's a temporary with a single thread
+			if #contactDataArray ~= 1 then
+				for _, contact in pairs(Phone.contactList) do
 
-				local alreadyListed = false
-				for _, existingContact in pairs(contactDataArray) do
-					if existingContact.localizedName == contact.localizedName then alreadyListed = true end
-				end
+					local alreadyListed = false
+					for _, existingContact in pairs(contactDataArray) do
+						if existingContact.localizedName == contact.localizedName then alreadyListed = true end
+					end
 
-				if not alreadyListed then
-					local c = ContactData.new()
-					c.id = "trainer_fred"
-					c.contactId = c.id
-					c.avatarID = TweakDBID.new("PhoneAvatars.Avatar_Unknown") -- no need to set
+					if not alreadyListed then
+						local c = ContactData.new()
+						c.id = "trainer_fred"
+						c.contactId = c.id
+						c.avatarID = TweakDBID.new("PhoneAvatars.Avatar_Unknown") -- no need to set
 
-					c.localizedName = contact.localizedName
-					c.localizedPreview = contact.localizedPreview
-					c.questRelated = contact.questRelated
-					c.hasQuestImportantReply = contact.hasQuestImportantReply
-					c.lastMesssagePreview = contact.localizedPreview
-					c.hasMessages = #contact.messages ~= 0
-					c.unreadMessegeCount = #contact.messages
-					c.messagesCount = #contact.messages
-					c.repliesCount = 0
-					c.unreadMessages = #contact.messages ~= 0 and {1} or nil -- {1,2,3,4} how to link?
-					-- c.activeDataSync: wref<MessengerContactSyncData>
-					c.threadsCount = 1
-					-- c.playerCanReply = true
-					c.hash = contact.hash
-					c.timeStamp = contact.timeStamp
-					c.type = listType
-					c.hasValidTitle = true
-					c.isCallable = contact.isCallable
-					table.insert(contactDataArray, c)
+						c.localizedName = contact.localizedName
+						c.localizedPreview = contact.localizedPreview
+						c.questRelated = contact.questRelated
+						c.hasQuestImportantReply = contact.hasQuestImportantReply
+						c.lastMesssagePreview = contact.localizedPreview
+						c.hasMessages = #contact.messages ~= 0
+						c.unreadMessegeCount = #contact.messages
+						c.messagesCount = #contact.messages
+						c.repliesCount = 0
+						c.unreadMessages = #contact.messages ~= 0 and {1} or nil -- {1,2,3,4} how to link?
+						-- c.activeDataSync: wref<MessengerContactSyncData>
+						c.threadsCount = 1
+						-- c.playerCanReply = true
+						c.hash = contact.hash
+						c.timeStamp = contact.timeStamp
+						c.type = listType
+						c.hasValidTitle = true
+						c.isCallable = contact.isCallable
+						table.insert(contactDataArray, c)
+					end
 				end
 			end
-		end
-		this.dataView:EnableSorting()
-		this.dataSource:Reset(contactDataArray)
-		this.dataView:DisableSorting()
-		this.firstInit = true
+			this.dataView:EnableSorting()
+			this.dataSource:Reset(contactDataArray)
+			this.dataView:DisableSorting()
+			this.firstInit = true
 
-		local indexToSelect = selectIndex
-		if itemHash ~= 0 then indexToSelect = ContactDataHelper.IndexOfOrZero(this.dataView, itemHash) end
-		this.indexToSelect = indexToSelect
+			local indexToSelect = selectIndex
+			if itemHash ~= 0 then indexToSelect = ContactDataHelper.IndexOfOrZero(this.dataView, itemHash) end
+			this.indexToSelect = indexToSelect
+		end)
 	end)
 
 	-- Replace name from "Coach Fred" to the valid one
