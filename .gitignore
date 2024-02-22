@@ -39,6 +39,11 @@ luac.out
 *.x86_64
 *.hex
 
+# Logs
+*.log
+
+*.sqlite3
+
 # Custom list
 tmp
 /freefly
