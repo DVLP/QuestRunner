@@ -5,12 +5,12 @@ function Lighting.AddSpotlight(pos, rot, strength, color, beamWidthAngle, beamWi
 	local transform = Game.GetPlayer():GetWorldTransform()
 	transform:SetPosition(pos)
 	transform:SetOrientationEuler(rot)
-	local entityID = WorldFunctionalTests.SpawnEntity("base\\flashlight\\light.ent", transform, '')
+	local entityID = WorldFunctionalTests.SpawnEntity("base\\qr\\entity\\spotlight.ent", transform, '')
 
 	Cron.RunWithRetry(0.5, 20, function()
 		local lightEntity = Game.FindEntityByID(entityID)
 		if lightEntity == nil then return false end
-		local light = lightEntity:FindComponentByName("Light5520")
+		local light = lightEntity:FindComponentByName("Spotlight001")
 		light:SetStrength(strength)
 		light:SetColor(color)
 		light:SetAngles(beamWidthAngle, beamWidthFalloff)

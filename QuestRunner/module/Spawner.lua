@@ -84,6 +84,20 @@ function Spawner.init()
 		end
 	end)
 end
+
+function Spawner.PlayAnimationOnTarget(obj, animationName, instant, callback)
+  local spawnTransform = obj:GetWorldTransform()
+  spawnTransform:SetPosition(obj:GetWorldPosition())
+  local angle = obj:GetWorldOrientation():ToEulerAngles().yaw
+  spawnTransform:SetOrientationEuler(EulerAngles.new(0, 0, angle + 180))
+  local entityID = exEntitySpawner.Spawn("base\\qr\\entity\\workspot_anim.ent", spawnTransform, '')
+  Cron.RunWithRetry(0.1, 100, function()
+  	local entity = Game.FindEntityByID(entityID)
+  	if not entity then return false end
+  	Game.GetWorkspotSystem():PlayInDeviceSimple(entity, obj, false, "qr_workspot_base", nil, nil, 0, 1, nil)
+    Game.GetWorkspotSystem():SendJumpToAnimEnt(obj, animationName, instant)
+    callback()
+  end)
 end
 
 function Spawner.Update(dt)

@@ -96,6 +96,38 @@ function returnStage:update(dt)
 		end
 	end
 
+	if not self.shownPlace8ug8ear and Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChairPos) < 1.8 then
+		self.shownPlace8ug8ear = true
+		local options = {
+			{ text = "Place 8ug8ear", icon = self.runner.selector.JACK_IN_ICON }
+		}
+		self.runner.selector.create("Surgical chair", options, function(id)
+			local psmEvent = PSMPostponedParameterBool.new()
+		    psmEvent.id = CName"forceDropBody"
+		    psmEvent.value = true
+		    GetPlayer():QueueEvent(psmEvent)
+		    -- Removing Unconscious should prevent from picking her up again but it doesn't
+		    -- StatusEffectHelper.RemoveStatusEffect(self.bugbear, TweakDBID.new("BaseStatusEffect.Unconscious"), self.bugbear:GetEntityID())
+	    	self.runner.Cron.After(0.1, function()
+	    		self.bugbear:SetDisableRagdoll(true, true)
+	    		local posOnChair = Vector4.new(-1546.95, 1234.28, 11.492, 1)
+				local rotOnChair = 147.213
+				self.runner.Spawner.MoveNPC(self.bugbear, posOnChair, rotOnChair, function()
+					self.runner.Spawner.PlayAnimationOnTarget(self.bugbear, "alt__lie_netrunner_chair__dead__01", nil, function()
+						-- prevent somehow picking her up again
+						-- ApplyStatus(self.bugbear, "BaseStatusEffect.NonInteractable")
+					end)
+				end)
+			end)
+			self.runner.selector.hideHub()
+		end)
+
+		self.runner.Cron.After(5, function()
+			self.shownPlace8ug8ear = false
+			self.runner.selector.hideHub()
+		end)
+	end
+
 	if not self.backToFriendly and Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChairPos) < 50 then
 		self.backToFriendly = true
 		-- changing her attitude back to friendly(when close to Viktor's) to carry her from the trunk in a civilised manner
