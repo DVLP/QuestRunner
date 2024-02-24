@@ -34,7 +34,7 @@ function debriefStage:update(dt)
 		self.leftTheArea = true
 	end
 
-	if Vector4.Distance(self.bugbear:GetWorldPosition(), self.viktorChair) > 2 then
+	if Vector4.Distance(self.bugbear:GetWorldPosition(), self.viktorChair) > 10 then
 		self.bugbearTaken = true
 	end
 

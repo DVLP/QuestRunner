@@ -64,7 +64,8 @@ end
 
 function returnStage:update(dt)
 	-- moving away with BB picked up
-	local distanceAway = Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.bbStartPos)
+	local playerPos = GetPlayer():GetWorldPosition()
+	local distanceAway = Vector4.Distance(playerPos, self.bbStartPos)
 
 	local measuringStart = self.currentStoryTrigger + 1
 	for i = measuringStart, #self.distanceMessageTriggers do
@@ -82,7 +83,7 @@ function returnStage:update(dt)
 	end
 
 	-- Approaching Viktor clinic's chair
-	if not self.shownLeaveMessage and Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChairPos) < 10 then
+	if not self.shownLeaveMessage and Vector4.Distance(playerPos, self.viktorChairPos) < 10 then
 		self.shownLeaveMessage = true
 		self.runner.HUD.QuestMessage(Lang:get("leave_bugbear_on_chair"))
 
@@ -96,7 +97,7 @@ function returnStage:update(dt)
 		end
 	end
 
-	if not self.shownPlace8ug8ear and Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChairPos) < 1.8 then
+	if not self.shownPlace8ug8ear and Vector4.Distance(playerPos, self.viktorChairPos) < 0.9 then
 		self.shownPlace8ug8ear = true
 		local options = {
 			{ text = "Place 8ug8ear", icon = self.runner.selector.JACK_IN_ICON }
@@ -112,6 +113,9 @@ function returnStage:update(dt)
 	    		self.bugbear:SetDisableRagdoll(true, true)
 	    		local posOnChair = Vector4.new(-1546.95, 1234.28, 11.492, 1)
 				local rotOnChair = 147.213
+				self.runner.Cron.After(3, function()
+					self.delivered8ug8ear = true
+				end)
 				self.runner.Spawner.MoveNPC(self.bugbear, posOnChair, rotOnChair, function()
 					self.runner.Spawner.PlayAnimationOnTarget(self.bugbear, "alt__lie_netrunner_chair__dead__01", nil, function()
 						-- prevent somehow picking her up again
@@ -121,14 +125,14 @@ function returnStage:update(dt)
 			end)
 			self.runner.selector.hideHub()
 		end)
-
-		self.runner.Cron.After(5, function()
-			self.shownPlace8ug8ear = false
-			self.runner.selector.hideHub()
-		end)
 	end
 
-	if not self.backToFriendly and Vector4.Distance(Game.GetPlayer():GetWorldPosition(), self.viktorChairPos) < 50 then
+	if self.shownPlace8ug8ear and Vector4.Distance(playerPos, self.viktorChairPos) > 1 then
+		self.shownPlace8ug8ear = false
+		self.runner.selector.hideHub()
+	end
+
+	if not self.backToFriendly and Vector4.Distance(playerPos, self.viktorChairPos) < 50 then
 		self.backToFriendly = true
 		-- changing her attitude back to friendly(when close to Viktor's) to carry her from the trunk in a civilised manner
 		self.bugbear:GetAttitudeAgent():SetAttitudeTowards(GetPlayer():GetAttitudeAgent(), EAIAttitude.AIA_Friendly)
@@ -142,7 +146,7 @@ function returnStage:update(dt)
 end
 
 function returnStage:isDone()
-	if IsDefined(self.bugbear) and Vector4.Distance(self.bugbear:GetWorldPosition(), self.viktorChairPos) < 1.5 then
+	if self.delivered8ug8ear then
 		return true
 	end
 	return false
@@ -153,7 +157,7 @@ function returnStage:isLost()
 		self.runner.HUD.Warning(Lang:get("bugbear_is_dead_in_trunk"))
 		return true
 	end
-	if not self.runner.Utils.isAlive(Game.GetPlayer()) then
+	if not self.runner.Utils.isAlive(GetPlayer()) then
 		self.runner.HUD.QuestMessage(Lang:get("you_died"))
 		return true
 	end
