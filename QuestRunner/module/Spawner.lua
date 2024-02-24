@@ -5,6 +5,7 @@ local log, errorLog, trace = table.unpack(require("module/Log"))
 local Spawner = {}
 local worldNPCs = {}
 local awaitingSpawnCallbacks = {}
+local activeCommands = {}
 local time = 0
 local lastUpdate = 0
 local UPDATE_INTERVAL = 1
@@ -68,6 +69,21 @@ function Spawner.init()
 		wnpc.spawned = false
 		if wnpc.onDespawn then wnpc.onDespawn() end
 	end)
+
+	Observe("AIHumanComponent", "OnCommandStateChanged", function(command, oldState, newState)
+		-- if newState ~= AICommandState.Executing then return nil end
+		local currentCMD
+		local currentCMDIndex
+		for i, cmd in ipairs(activeCommands) do
+			if cmd.command.state == AICommandState.Success then
+				local callback = cmd.callback
+				Cron.After(0.1, callback)
+				table.remove(activeCommands, i)
+				i = i - 1
+			end
+		end
+	end)
+end
 end
 
 function Spawner.Update(dt)
@@ -102,7 +118,7 @@ function Spawner.Update(dt)
 
 	-- Detect if spawned NPC fell through the floor
 	for i, wnpc in pairs(worldNPCs) do
-		if wnpc.spawned and not wnpc.isSpawning and (time - wnpc.spawnedTime < 3) and Vector4.Distance2D(wnpc.spawnPos, wnpc.pos) < 2 and wnpc.spawnPos.z - wnpc.pos.z > 3 then
+		if wnpc.spawned and not wnpc.isSpawning and (time - wnpc.spawnedTime < 3) and Vector4.Distance2D(wnpc.spawnPos, wnpc.pos) < 2 and wnpc.spawnPos.z - wnpc.pos.z > 2.5 then
 			wnpc.pos = Vector4.new(wnpc.spawnPos)
 			Spawner.Despawn(wnpc.ref)
 			wnpc.spawned = false
@@ -233,14 +249,25 @@ end
 function Spawner.Despawn(spawnedObject)
 	if spawnedObject == nil or not IsDefined(spawnedObject) then return end
 
-	local teleportCmd = AITeleportCommand.new()
-	teleportCmd.position = Vector4.new(9999, 9999, 0, 1)
-	teleportCmd.rotation = 1
-	teleportCmd.doNavTest = false
-	spawnedObject:GetAIControllerComponent():SendCommand(teleportCmd)
+	Spawner.MoveNPC(spawnedObject, Vector4.new(9999, 9999, 0, 1), 1)
 
 	-- This doesn't do anything but maybe keeps some counters clearer
 	Game.GetPreventionSpawnSystem():RequestDespawn(spawnedObject:GetEntityID())
+end
+
+function Spawner.MoveNPC(obj, pos, rot, callback)
+	local teleportCmd = AITeleportCommand.new()
+	teleportCmd.position = pos
+	teleportCmd.rotation = rot
+	teleportCmd.doNavTest = false
+	obj:GetAIControllerComponent():SendCommand(teleportCmd)
+
+	if callback then
+		table.insert(activeCommands, {
+			command = teleportCmd,
+			callback = callback,
+		})
+	end
 end
 
 function Spawner.Remove(npcID)

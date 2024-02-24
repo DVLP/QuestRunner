@@ -71,9 +71,9 @@ function Lang:buildReverseLookupIndex()
 	end
 end
 
-function formatForGender(string, gender)
+function formatForGender(str, gender)
 	local pattern = "([A-Za-z ])Æ{([^}]+)}"
-	local result = string.gsub(string, pattern, function(letter, options)
+	local result = string.gsub(str, pattern, function(letter, options)
 		local optionArr = {}
 		for option in options:gmatch("[^|]+") do
 			table.insert(optionArr, option)
