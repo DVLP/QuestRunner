@@ -12,6 +12,7 @@ cp -r ./QuestRunner ./tmp/bin/x64/plugins/cyber_engine_tweaks/mods/QuestRunner
 cd tmp
 find ./bin/x64/plugins/cyber_engine_tweaks/mods/QuestRunner -name "*.log" -type f -delete
 find ./bin/x64/plugins/cyber_engine_tweaks/mods/QuestRunner -name "*.sqlite3" -type f -delete
+cp -r ../QuestRunnerWolf/packed/archive .
 7z.exe a -tzip -r ./QuestRunner *
 mv ./QuestRunner.zip ../deploy/
 cd ..

@@ -119,6 +119,7 @@ function DoBBQuest:cleanup()
 	self.runner.Cron.Halt(self.retrySpawnBBTimerId)
 	self.runner.Spawner.Remove(self.bugbearWNPC.id)
 	self.runner.Spawner.reset()
+	self.runner.Phone.setContactProperty("8ug8earNew", "questRelated", false)
 end
 
 function DoBBQuest:phonecallResponseOptions()
