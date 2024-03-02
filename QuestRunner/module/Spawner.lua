@@ -65,6 +65,16 @@ function Spawner.init()
 			return
 		end
 
+		-- Edge case: sometimes DespawnCallback triggers immediately after a headshot for distant NPCs, and isDead is not set yet
+		if Game.GetStatPoolsSystem():GetStatPoolValue(wnpc.entityID, gamedataStatPoolType.Health, false) == 0 then
+			wnpc.isDead = true
+		end
+
+		if wnpc.isDead then
+			Spawner.Remove(wnpc.id)
+			return
+		end
+
 		wnpc.entityID = nil
 		wnpc.spawned = false
 		if wnpc.onDespawn then wnpc.onDespawn() end
