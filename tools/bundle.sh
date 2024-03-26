@@ -39,3 +39,14 @@ find ./bin/x64/plugins/cyber_engine_tweaks/mods/DisappearanceOf8ug8ear -name "*.
 mv ./DisappearanceOf8ug8ear.zip ../deploy/
 cd ..
 rm -rf ./tmp
+
+# pack Remove that stupid song
+mkdir -p ./tmp/bin/x64/plugins/cyber_engine_tweaks/mods
+cp -r ./RemoveThatStupidSong ./tmp/bin/x64/plugins/cyber_engine_tweaks/mods/RemoveThatStupidSong
+cd tmp
+find ./bin/x64/plugins/cyber_engine_tweaks/mods/RemoveThatStupidSong -name "*.log" -type f -delete
+find ./bin/x64/plugins/cyber_engine_tweaks/mods/RemoveThatStupidSong -name "*.sqlite3" -type f -delete
+7z.exe a -tzip -r ./RemoveThatStupidSong *
+mv ./RemoveThatStupidSong.zip ../deploy/
+cd ..
+rm -rf ./tmp
